@@ -32,9 +32,9 @@
 
 ## To-Do
 - [ ] Change name. (Maybe) Lightning proxy sounds very simular to CCU's new name, ElectricalBypass.
-- [ ] Make look better
+- [ ] Make it look better
 - [ ] Add a optional password system
 - [ ] Release V2 (After above)
 
 ## Credits
-This is a fork from vividelitezz's ElectricalBypass. However, verything was changed except the ultraviolet stuff. I am not saying that this code is completely mine. All of the orginal styling and pages were either replaced or deleted, excluding the ultraviolet black magic. But, this is just for fun. I do not intend to steal anyone's work. In the future, I will change this to no longer be a fork. (Once I add more things)
+This is a fork from vividelitezz's ElectricalBypass. However, almost everything was changed except the ultraviolet stuff. I am not saying that this code is completely mine. All of the orginal styling and pages were either replaced or deleted, excluding the ultraviolet black magic. But, this is just for fun. I do not intend to steal anyone's work. In the future, I will change this to no longer be a fork. (Once I add more things)
