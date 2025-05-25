@@ -6,21 +6,21 @@
     <title>CONNECT=PROXY</title>
     <link rel="icon" type="image/x-icon" href="assets/img/google.png" />
     <style>
-      /* ページ全体の設定 */
+      /* 全体背景 */
       html, body {
         margin: 0;
         padding: 0;
         width: 100%;
         height: 100%;
         font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #001f3f, #000c1a); /* 暗い青色グラデーション */
+        background: linear-gradient(135deg, #001f3f, #000c1a);
         display: flex;
         justify-content: center;
         align-items: center;
         color: #ffffff;
       }
       
-      /* 中央のコンテナ（クラス名 header-container はそのまま） */
+      /* 中央コンテナ：クラス名はそのまま維持 */
       .header-container {
         width: 90%;
         max-width: 1200px;
@@ -33,12 +33,12 @@
         text-align: center;
       }
       
-      /* タイトル（.header） */
+      /* タイトル */
       .header {
         font-size: 64px;
         font-weight: bold;
         margin-bottom: 20px;
-        color: #4fc3f7;  /* 明るいブルーアクセント */
+        color: #4fc3f7;
         text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
       }
       
@@ -50,13 +50,13 @@
         letter-spacing: 1px;
       }
       
-      /* 検索バー（.input） */
+      /* 検索バー */
       .input {
         font-size: 24px;
         padding: 15px 20px;
         width: 80%;
         max-width: 500px;
-        border-radius: 30px;  /* 丸みを強調 */
+        border-radius: 30px;
         border: none;
         outline: none;
         background: rgba(255, 255, 255, 0.1);
@@ -80,7 +80,7 @@
       <input type="text" class="input" id="searchInput" name="search" placeholder="Search or enter a command..." />
     </div>
     
-    <!-- UV ライブラリ等、必要なスクリプト群（用途に合わせて） -->
+    <!-- 必要なスクリプト群（用途に応じて） -->
     <script src="./uv/uv.bundle.js"></script>
     <script src="./uv/uv.config.js"></script>
     <script src="./assets/register-sw.js"></script>
