@@ -11,17 +11,17 @@
         margin: 0;
         padding: 0;
         font-family: Arial, sans-serif;
-        /* 落ち着いたグレー系のグラデーション背景 */
-        background: linear-gradient(135deg, #555, #333);
+        /* 背景をもう少し暗い青色のグラデーションに */
+        background: linear-gradient(135deg, #001f3f, #000a1f);
         display: flex;
         justify-content: center;
         align-items: center;
         color: #e0e0e0;
       }
-      /* 元々のheader-containerをOS風にリファイン */
       .header-container {
         width: 80%;
         max-width: 1000px;
+        /* 背景は透過の黒（OS風） */
         background: rgba(0, 0, 0, 0.8);
         padding: 40px 20px;
         border-radius: 15px;
@@ -42,7 +42,6 @@
         margin-top: 10px;
         color: #aaa;
       }
-      /* 入力欄は元々の.inputに丸みとダークな背景を追加 */
       .input {
         margin-top: 20px;
         padding: 20px;
@@ -75,7 +74,7 @@
         placeholder="Search or enter a URL"
       />
     </div>
-    
+
     <script src="./uv/uv.bundle.js"></script>
     <script src="./uv/uv.config.js"></script>
     <script src="./assets/register-sw.js"></script>
