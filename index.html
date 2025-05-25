@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CONNECT-PROXY タブプロキシ</title>
+  <title>connect-proxy</title>
   <link rel="icon" type="image/x-icon" href="assets/img/google.png">
   <style>
-    /* 基本のリセット */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    /* リセットとグローバルスタイル */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       height: 100%;
       font-family: Arial, sans-serif;
@@ -19,102 +15,188 @@
       color: #e0e0e0;
     }
     
-    /* ナビゲーションバー（タブバー） */
-    .navbar {
+    /* タブバー全体 */
+    .tab-bar {
       display: flex;
       align-items: center;
       height: 50px;
-      padding: 0 10px;
-      background-color: #202020;
+      background-color: #1f1f1f;
       border-bottom: 1px solid #333;
+      padding: 0 10px;
     }
     
-    .navbar button {
-      background-color: #333;
+    /* ナビゲーション用コントロール： 戻る、進む、更新 */
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      margin-right: 15px;
+    }
+    .nav-controls button {
+      background: none;
       border: none;
       color: #e0e0e0;
-      padding: 5px 10px;
+      font-size: 18px;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .nav-controls button:hover {
+      color: #aaa;
+    }
+    
+    /* タブボタンのスタイル */
+    #tabs {
+      display: flex;
+      flex-grow: 1;
+      overflow-x: auto;
+    }
+    .tab {
+      padding: 10px 15px;
       margin-right: 5px;
+      background-color: #333;
       border-radius: 4px;
       cursor: pointer;
-      outline: none;
+      white-space: nowrap;
+      transition: background-color 0.2s;
+      user-select: none;
     }
-    .navbar button:hover {
+    .tab.active {
+      background-color: #555;
+    }
+    .tab:hover {
       background-color: #444;
     }
     
-    /* URL 表示エリア */
-    .url-display {
-      flex: 1;
-      padding: 5px 10px;
-      background-color: #333;
+    /* ＋ボタン */
+    .add-tab {
+      background-color: #444;
       border: none;
-      border-radius: 4px;
-      font-size: 14px;
       color: #e0e0e0;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 24px;
+      transition: background-color 0.2s;
+    }
+    .add-tab:hover {
+      background-color: #555;
     }
     
-    /* コンテンツエリア */
+    /* iframe コンテナ */
+    .iframe-container {
+      position: relative;
+      width: 100%;
+      height: calc(100% - 50px);
+    }
     iframe {
       width: 100%;
-      height: calc(100% - 50px); /* ナビバー分の高さを差し引く */
+      height: 100%;
       border: none;
+      display: none;
+    }
+    iframe.active {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <!-- タブ用のナビゲーションバー -->
-  <div class="navbar">
-    <button onclick="goBack()">←</button>
-    <button onclick="goForward()">→</button>
-    <button onclick="refreshIframe()">⟳</button>
-    <input type="text" id="urlDisplay" class="url-display" readonly />
+  <!-- タブバー（ナビゲーション＋タブ一覧＋＋ボタン） -->
+  <div class="tab-bar">
+    <div class="nav-controls">
+      <button id="backBtn" title="戻る">←</button>
+      <button id="forwardBtn" title="進む">→</button>
+      <button id="refreshBtn" title="更新">⟳</button>
+    </div>
+    <div id="tabs"></div>
+    <button class="add-tab" onclick="addTab()" title="新しいタブを開く">＋</button>
   </div>
-
-  <!-- コンテンツを表示するiframe -->
-  <iframe id="contentFrame" name="iframe_name" src="server.html"></iframe>
+  
+  <!-- iframe表示領域 -->
+  <div class="iframe-container" id="iframeContainer"></div>
   
   <script>
-    const iframe = document.getElementById('contentFrame');
-    const urlDisplay = document.getElementById('urlDisplay');
-    
-    // iframeロード時にURLを取得して表示（※同一オリジンの場合に有効）
-    function updateURL() {
+    let tabs = [];            // タブの ID を保持する配列
+    let currentTabId = null;  // 現在のタブID
+    let tabIdCounter = 0;     // タブに付与するユニークな番号
+
+    // 新しいタブを追加する関数
+    // url引数には初期表示するページを指定（今回は "server.html" をロード）
+    function addTab(url = "server.html") {
+      const id = 'tab-' + (++tabIdCounter);
+
+      // iframe の作成
+      const iframe = document.createElement('iframe');
+      iframe.id = id;
+      iframe.src = url;
+      if (!currentTabId) {  // 最初のタブは自動的にアクティブにする
+        iframe.classList.add('active');
+        currentTabId = id;
+      }
+      // iframe のロード完了時にページタイトルをタブボタンへ反映
+      iframe.addEventListener('load', function(){
+        updateTabTitle(id);
+      });
+      document.getElementById('iframeContainer').appendChild(iframe);
+
+      // タブボタンの作成
+      const tabButton = document.createElement('div');
+      tabButton.classList.add('tab');
+      tabButton.id = 'button-' + id;
+      tabButton.innerText = 'Loading...';
+      tabButton.onclick = () => switchTab(id);
+      document.getElementById('tabs').appendChild(tabButton);
+
+      tabs.push(id);
+      // 新規作成したタブに切り替え
+      switchTab(id);
+    }
+
+    // タブ切替機能
+    function switchTab(id) {
+      // 現在のタブがあれば非表示にする
+      if (currentTabId) {
+        document.getElementById(currentTabId).classList.remove('active');
+        document.getElementById('button-' + currentTabId).classList.remove('active');
+      }
+      currentTabId = id;
+      document.getElementById(id).classList.add('active');
+      document.getElementById('button-' + id).classList.add('active');
+    }
+
+    // iframe 内のページタイトルをタブボタンに反映する関数
+    function updateTabTitle(id) {
       try {
-        const currentURL = iframe.contentWindow.location.href;
-        urlDisplay.value = currentURL;
-      } catch (error) {
-        // 別ドメインの場合はエラーになり、ここでプロキシなどの処理が必要です
-        urlDisplay.value = "URL を取得できません (Cross-Origin)";
+        const iframe = document.getElementById(id);
+        const title = iframe.contentDocument ? iframe.contentDocument.title : iframe.contentWindow.document.title;
+        const button = document.getElementById('button-' + id);
+        button.innerText = title || 'Untitled';
+      } catch(e) {
+        // セキュリティ上、クロスオリジンの場合は取得できない
+        document.getElementById('button-' + id).innerText = "Untitled";
       }
     }
-    
-    iframe.addEventListener('load', updateURL);
-    
-    // navigation function
-    function goBack() {
-      try {
-        iframe.contentWindow.history.back();
-      } catch(err) {
-        console.error(err);
+
+    // ナビゲーション操作（戻る・進む・更新）の実装
+    document.getElementById('backBtn').addEventListener('click', function(){
+      if(currentTabId) {
+        document.getElementById(currentTabId).contentWindow.history.back();
       }
-    }
-    
-    function goForward() {
-      try {
-        iframe.contentWindow.history.forward();
-      } catch(err) {
-        console.error(err);
+    });
+    document.getElementById('forwardBtn').addEventListener('click', function(){
+      if(currentTabId) {
+        document.getElementById(currentTabId).contentWindow.history.forward();
       }
-    }
-    
-    function refreshIframe() {
-      try {
-        iframe.contentWindow.location.reload();
-      } catch(err) {
-        console.error(err);
+    });
+    document.getElementById('refreshBtn').addEventListener('click', function(){
+      if(currentTabId) {
+        document.getElementById(currentTabId).contentWindow.location.reload();
       }
-    }
+    });
+    
+    // ページ読み込み時に初期のタブを追加
+    window.addEventListener('load', function(){
+      addTab();
+    });
   </script>
 </body>
 </html>
