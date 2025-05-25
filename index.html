@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CONNECT-PROXY</title>
+  <title>connect-proxy</title>
   <link rel="icon" type="image/x-icon" href="assets/img/google.png">
   <style>
-    /* Global Reset */
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -18,8 +18,8 @@
       background: linear-gradient(90deg, #0D0D0D, #001f3f);
       color: #e0e0e0;
     }
+    
 
-    /* Tab bar and navigation */
     .tab-bar {
       display: flex;
       align-items: center;
@@ -34,37 +34,25 @@
       color: #4FC3F7;
       margin-right: 20px;
     }
-    .nav-controls, .extra-controls {
+    .nav-controls {
       display: flex;
       align-items: center;
       margin-right: 15px;
     }
-    .nav-controls button,
-    .extra-controls button {
+    .nav-controls button {
       background: none;
       border: none;
       color: #4FC3F7;
+      font-size: 20px;
+      margin-right: 10px;
       cursor: pointer;
       transition: color 0.2s;
     }
-    .nav-controls button {
-      font-size: 20px;
-      margin-right: 10px;
-    }
-    .nav-controls button:hover,
-    .extra-controls button:hover {
+    .nav-controls button:hover {
       color: #81D4FA;
     }
-    .extra-controls button {
-      font-size: 16px;
-      margin-right: 10px;
-    }
-    .clock {
-      font-size: 16px;
-      margin-right: 15px;
-    }
+    
 
-    /* Tabs styling */
     #tabs {
       display: flex;
       flex-grow: 1;
@@ -112,8 +100,8 @@
     .add-tab:hover {
       background-color: #005fa3;
     }
+    
 
-    /* Iframe container */
     .iframe-container {
       position: relative;
       width: 100%;
@@ -128,106 +116,48 @@
     iframe.active {
       display: block;
     }
-
-    /* Modal styles for the History panel */
-    #historyModal {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #001f3f;
-      color: #e0e0e0;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      z-index: 1000;
-      max-width: 90%;
-    }
-    #historyModal h2 {
-      margin-bottom: 10px;
-    }
-    #historyList {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .history-item {
-      padding: 5px 0;
-      border-bottom: 1px solid #333;
-      cursor: pointer;
-    }
-    .history-item:hover {
-      background-color: #005fa3;
-    }
-    #closeHistory {
-      background: none;
-      border: none;
-      color: #4FC3F7;
-      float: right;
-      font-size: 20px;
-      cursor: pointer;
-    }
-    #closeHistory:hover {
-      color: #81D4FA;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Top navigation bar with brand, nav buttons, extra controls (clock, incognito, history) and tabs container -->
   <div class="tab-bar">
-    <div class="brand">CONNECT-PROXY</div>
+    <div class="brand">CONNECT=PROXY</div>
     <div class="nav-controls">
-      <button id="backBtn" title="Back">←</button>
-      <button id="forwardBtn" title="Forward">→</button>
-      <button id="refreshBtn" title="Reload">⟳</button>
-    </div>
-    <div class="extra-controls">
-      <div class="clock" id="clock">00:00:00</div>
-      <button id="incognitoBtn" title="Toggle Secret Mode">Incognito: Off</button>
-      <button id="historyBtn" title="History">History</button>
+      <button id="backBtn" title="戻る">←</button>
+      <button id="forwardBtn" title="進む">→</button>
+      <button id="refreshBtn" title="更新">⟳</button>
     </div>
     <div id="tabs"></div>
-    <button class="add-tab" onclick="addTab()" title="New Tab">＋</button>
+    <button class="add-tab" onclick="addTab()" title="新しいタブを追加">＋</button>
   </div>
+  
 
-  <!-- Iframe container -->
   <div class="iframe-container" id="iframeContainer"></div>
-
-  <!-- Modal for history -->
-  <div id="historyModal">
-    <button id="closeHistory" title="Close">×</button>
-    <h2>History</h2>
-    <div id="historyList"></div>
-  </div>
-
+  
   <script>
     let tabs = [];
     let currentTabId = null;
     let tabIdCounter = 0;
-    let historyRecords = [];
-    let secretMode = false; // When true, no history is recorded
 
-    // Adds a new tab/iframe and corresponding tab button.
+
     function addTab(url = "server.html") {
       const id = 'tab-' + (++tabIdCounter);
       
-      // Create iframe element.
+
       const iframe = document.createElement('iframe');
       iframe.id = id;
       iframe.src = url;
+
       if (!currentTabId) {
         iframe.classList.add('active');
         currentTabId = id;
       }
-      // Update the title and record history when the iframe loads.
       iframe.addEventListener('load', function(){
         updateTabTitle(id);
-        recordHistory(id);
       });
       document.getElementById('iframeContainer').appendChild(iframe);
       
-      // Create the tab button.
+
       const tabButton = document.createElement('div');
       tabButton.classList.add('tab');
       tabButton.id = 'button-' + id;
@@ -236,7 +166,6 @@
       titleSpan.innerText = 'Loading...';
       tabButton.appendChild(titleSpan);
       
-      // Create close (×) button for the tab.
       const closeBtn = document.createElement('button');
       closeBtn.innerText = '×';
       closeBtn.classList.add('close-btn');
@@ -253,8 +182,9 @@
       switchTab(id);
     }
 
-    // Switches the view to the selected tab.
+
     function switchTab(id) {
+
       if (currentTabId && document.getElementById(currentTabId)) {
         document.getElementById(currentTabId).classList.remove('active');
         document.getElementById('button-' + currentTabId).classList.remove('active');
@@ -264,7 +194,7 @@
       document.getElementById('button-' + id).classList.add('active');
     }
 
-    // Update the title of the tab button based on the iframe's document title.
+
     function updateTabTitle(id) {
       try {
         const iframe = document.getElementById(id);
@@ -278,31 +208,12 @@
       }
     }
 
-    // Record the current page in history (unless secret mode is active).
-    function recordHistory(id) {
-      if (secretMode) return;  // Skip recording if in Incognito mode
-      try {
-        const iframe = document.getElementById(id);
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
-        const title = doc.title || 'Untitled';
-        const url = iframe.contentWindow.location.href;
-        const time = new Date().toLocaleTimeString();
-        historyRecords.push({time, title, url});
-      } catch(e) {
-        // If there's a cross-origin issue, fall back to the iframe's src
-        const iframe = document.getElementById(id);
-        const title = 'Untitled';
-        const url = iframe.src;
-        const time = new Date().toLocaleTimeString();
-        historyRecords.push({time, title, url});
-      }
-    }
 
-    // Close and remove a tab and its corresponding iframe.
     function closeTab(targetId) {
       const iframe = document.getElementById(targetId);
       const tabButton = document.getElementById('button-' + targetId);
-      
+
+
       if (iframe && iframe.parentNode) {
         iframe.parentNode.removeChild(iframe);
       }
@@ -310,14 +221,16 @@
         tabButton.parentNode.removeChild(tabButton);
       }
       
+
       const index = tabs.indexOf(targetId);
       if (index !== -1) {
         tabs.splice(index, 1);
       }
       
-      // If the closed tab was active, switch to a neighboring tab.
+
       if (currentTabId === targetId) {
         let newActiveTabId = null;
+
         if (tabs[index]) {
           newActiveTabId = tabs[index];
         } else if (tabs[index - 1]) {  
@@ -328,13 +241,14 @@
           currentTabId = newActiveTabId;
           switchTab(newActiveTabId);
         } else {
-          currentTabId = null;
+
+          currentTabId = null;  
           addTab();
         }
       }
     }
 
-    // Navigation controls for the active tab.
+
     document.getElementById('backBtn').addEventListener('click', function(){
       if (currentTabId) {
         document.getElementById(currentTabId).contentWindow.history.back();
@@ -350,55 +264,8 @@
         document.getElementById(currentTabId).contentWindow.location.reload();
       }
     });
+    
 
-    // Clock update function: Displays current time (24-hour English format).
-    function updateClock() {
-      const clockElement = document.getElementById('clock');
-      const now = new Date();
-      clockElement.innerText = now.toLocaleTimeString('en-US', { hour12: false });
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // Toggle Secret Mode (Incognito) on or off.
-    document.getElementById('incognitoBtn').addEventListener('click', function(){
-      secretMode = !secretMode;
-      this.innerText = secretMode ? "Incognito: On" : "Incognito: Off";
-    });
-
-    // History modal logic.
-    document.getElementById('historyBtn').addEventListener('click', function(){
-      showHistory();
-    });
-    document.getElementById('closeHistory').addEventListener('click', function(){
-      document.getElementById('historyModal').style.display = 'none';
-    });
-
-    // Displays the history modal with a list of visited pages.
-    function showHistory() {
-      const historyList = document.getElementById('historyList');
-      historyList.innerHTML = "";
-      if (historyRecords.length === 0) {
-        historyList.innerHTML = "<p>No history available.</p>";
-      } else {
-        historyRecords.forEach((record) => {
-          const item = document.createElement('div');
-          item.classList.add('history-item');
-          item.innerText = `${record.time} - ${record.title} (${record.url})`;
-          // Clicking a history item loads that URL in the current tab.
-          item.onclick = function() {
-            if (currentTabId) {
-              document.getElementById(currentTabId).src = record.url;
-            }
-            document.getElementById('historyModal').style.display = 'none';
-          };
-          historyList.appendChild(item);
-        });
-      }
-      document.getElementById('historyModal').style.display = 'block';
-    }
-
-    // Initialize by opening a default tab on window load.
     window.addEventListener('load', function(){
       addTab();
     });
