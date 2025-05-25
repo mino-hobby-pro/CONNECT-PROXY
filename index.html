@@ -6,7 +6,7 @@
   <title>connect-proxy</title>
   <link rel="icon" type="image/x-icon" href="assets/img/google.png">
   <style>
-    /* グローバルリセット・背景 */
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -19,7 +19,7 @@
       color: #e0e0e0;
     }
     
-    /* タブバー＆ブランド */
+
     .tab-bar {
       display: flex;
       align-items: center;
@@ -52,7 +52,7 @@
       color: #81D4FA;
     }
     
-    /* タブ部分 */
+
     #tabs {
       display: flex;
       flex-grow: 1;
@@ -101,7 +101,7 @@
       background-color: #005fa3;
     }
     
-    /* iframe 表示エリア */
+
     .iframe-container {
       position: relative;
       width: 100%;
@@ -119,7 +119,7 @@
   </style>
 </head>
 <body>
-  <!-- タブバー部分 -->
+
   <div class="tab-bar">
     <div class="brand">CONNECT=PROXY</div>
     <div class="nav-controls">
@@ -131,7 +131,7 @@
     <button class="add-tab" onclick="addTab()" title="新しいタブを追加">＋</button>
   </div>
   
-  <!-- iframe 表示エリア -->
+
   <div class="iframe-container" id="iframeContainer"></div>
   
   <script>
@@ -139,15 +139,15 @@
     let currentTabId = null;
     let tabIdCounter = 0;
 
-    // 新しいタブを追加（デフォルトは "server.html"）
+
     function addTab(url = "server.html") {
       const id = 'tab-' + (++tabIdCounter);
       
-      // iframe の作成
+
       const iframe = document.createElement('iframe');
       iframe.id = id;
       iframe.src = url;
-      // もし現在 active のタブがなければ、新規タブを active にする
+
       if (!currentTabId) {
         iframe.classList.add('active');
         currentTabId = id;
@@ -157,7 +157,7 @@
       });
       document.getElementById('iframeContainer').appendChild(iframe);
       
-      // タブボタンの作成（タイトル表示用 span と×ボタン）
+
       const tabButton = document.createElement('div');
       tabButton.classList.add('tab');
       tabButton.id = 'button-' + id;
@@ -182,9 +182,9 @@
       switchTab(id);
     }
 
-    // タブ切り替え処理
+
     function switchTab(id) {
-      // active クラスの切り替え
+
       if (currentTabId && document.getElementById(currentTabId)) {
         document.getElementById(currentTabId).classList.remove('active');
         document.getElementById('button-' + currentTabId).classList.remove('active');
@@ -194,7 +194,7 @@
       document.getElementById('button-' + id).classList.add('active');
     }
 
-    // iframe 内のページタイトルを取得してタブに反映
+
     function updateTabTitle(id) {
       try {
         const iframe = document.getElementById(id);
@@ -208,12 +208,12 @@
       }
     }
 
-    // タブを削除する処理（強固な処理で、閉じた際に必ず新しい active タブが表示される）
+
     function closeTab(targetId) {
       const iframe = document.getElementById(targetId);
       const tabButton = document.getElementById('button-' + targetId);
 
-      // 要素が存在すれば削除
+
       if (iframe && iframe.parentNode) {
         iframe.parentNode.removeChild(iframe);
       }
@@ -221,19 +221,19 @@
         tabButton.parentNode.removeChild(tabButton);
       }
       
-      // 配列から削除
+
       const index = tabs.indexOf(targetId);
       if (index !== -1) {
         tabs.splice(index, 1);
       }
       
-      // 削除したタブが active ならば
+
       if (currentTabId === targetId) {
         let newActiveTabId = null;
-        // 同じ位置のタブがあれば、それを active に
+
         if (tabs[index]) {
           newActiveTabId = tabs[index];
-        } else if (tabs[index - 1]) {  // なければ前のタブ
+        } else if (tabs[index - 1]) {  
           newActiveTabId = tabs[index - 1];
         }
         
@@ -241,14 +241,14 @@
           currentTabId = newActiveTabId;
           switchTab(newActiveTabId);
         } else {
-          // タブが無くなった場合は即 addTab() を呼び出す（"server.html" をロード）
-          currentTabId = null;  // 念のためリセット
+
+          currentTabId = null;  
           addTab();
         }
       }
     }
 
-    // ナビゲーション操作
+
     document.getElementById('backBtn').addEventListener('click', function(){
       if (currentTabId) {
         document.getElementById(currentTabId).contentWindow.history.back();
@@ -265,7 +265,7 @@
       }
     });
     
-    // 初回読み込み時に必ずデフォルトタブを追加
+
     window.addEventListener('load', function(){
       addTab();
     });
