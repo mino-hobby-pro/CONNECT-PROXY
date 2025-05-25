@@ -1,82 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>connect-proxy</title>
-    <link rel="icon" type="image/x-icon" href="assets/img/google.png" />
-    <style>
-      body {
-        background-color: #1e1e1e;
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        text-align: center;
-        color: #e0e0e0;
-      }
-      .header-container {
-        width: 80%;
-        max-width: 1000px;
-        background: #2c2c2c;
-        padding: 40px 20px;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-      .header {
-        margin: 0;
-        font-size: 72px;
-        font-weight: bold;
-        color: #e0e0e0;
-      }
-      .description {
-        font-size: 30px;
-        margin-top: 10px;
-        color: #ccc;
-      }
-      .input {
-        margin-top: 20px;
-        padding: 20px;
-        font-size: 24px;
-        width: 100%;
-        max-width: 1000px;
-        border-radius: 8px;
-        border: 2px solid #555;
-        box-sizing: border-box;
-        text-align: center;
-        height: 60px;
-        background-color: #333;
-        color: #e0e0e0;
-      }
-      .input::placeholder {
-        color: #aaa;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="header-container">
-      <h1 class="header">connect-proxy</h1>
-      <p class="description">By LebbieTheLuke</p>
-      <input
-        type="text"
-        class="input"
-        id="searchInput"
-        name="search"
-        placeholder="Search or enter a URL"
-      />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CONNECT-PROXY OS</title>
+  <link rel="icon" type="image/x-icon" href="assets/img/google.png" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #001f3f, #0074D9);  /* 青と黒のグラデーション */
+      color: #e0e0e0;
+    }
+    .os-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 1200px;
+      background-color: rgba(0,0,0,0.8);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+      overflow: hidden;
+    }
+    .os-header {
+      background-color: #001f3f;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #004080;
+    }
+    .os-header h1 {
+      font-size: 48px;
+      margin: 0;
+      color: #4FC3F7;
+    }
+    .os-body {
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .os-body p {
+      font-size: 24px;
+      margin: 20px 0;
+      color: #b0c4de;
+    }
+    .search-bar {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 15px;
+      font-size: 20px;
+      border: none;
+      border-radius: 30px;  /* 丸みのある検索バー */
+      outline: none;
+    }
+    .os-footer {
+      background-color: #001f3f;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #4FC3F7;
+      border-top: 1px solid #004080;
+    }
+  </style>
+</head>
+<body>
+  <div class="os-container">
+    <div class="os-header">
+      <h1>CONNECT-PROXY OS</h1>
     </div>
-    
-    <!-- 以下は必要なスクリプト群。用途に合わせて調整してください -->
-    <script src="./uv/uv.bundle.js"></script>
-    <script src="./uv/uv.config.js"></script>
-    <script src="./assets/register-sw.js"></script>
-    <script src="./assets/script.js" defer></script>
-  </body>
+    <div class="os-body">
+      <p>Welcome to CONNECT-PROXY. Experience a new era of browsing.</p>
+      <input type="text" class="search-bar" placeholder="Search or enter a command..." />
+    </div>
+    <div class="os-footer">
+      © 2025 CONNECT-PROXY. All rights reserved.
+    </div>
+  </div>
+  
+  <!-- 必要に応じたスクリプト群（例：UVライブラリ等）の読み込み -->
+  <script src="./uv/uv.bundle.js"></script>
+  <script src="./uv/uv.config.js"></script>
+  <script src="./assets/register-sw.js"></script>
+  <script src="./assets/script.js" defer></script>
+</body>
 </html>
