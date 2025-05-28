@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,18 +7,18 @@
     <link rel="icon" type="image/x-icon" href="assets/img/google.png" />
     <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700|Montserrat:400,700&display=swap" rel="stylesheet" />
     <style>
-      * {margin:0;padding:0;box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;}
-      html,body {width:100%;height:100%;font-family:'Montserrat',sans-serif;color:#fff;overflow:hidden;display:flex;justify-content:center;align-items:center;background:#000;background-image:linear-gradient(150deg,#0d0d2b,#000,#0d0d2b);}
-      #bgCanvas {position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;}
-      body::after {content:"";position:fixed;top:0;left:0;width:100%;height:100%;background:url("assets/img/stars.png") repeat;opacity:0.2;z-index:-1;}
-      .header-container {width:90%;max-width:1200px;padding:80px 100px;border-radius:20px;background-color:rgba(0,0,0,0.7);box-shadow:0 8px 16px rgba(0,0,0,0.9);text-align:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);position:relative;z-index:10;}
-      .header {font-family:'Orbitron',sans-serif;font-size:4rem;font-weight:700;margin-bottom:20px;color:#4fc3f7;text-shadow:0 4px 8px rgba(0,0,0,0.8);letter-spacing:2px;}
-      .description {font-size:1.75rem;margin-bottom:30px;color:#a8d0e6;letter-spacing:1px;}
-      .input {font-size:1.5rem;padding:15px 20px;width:80%;max-width:500px;border-radius:30px;border:none;outline:none;background:rgba(255,255,255,0.1);color:#e0e0e0;text-align:center;transition:all 0.3s ease-in-out;}
-      .input::placeholder {color:#b0c4de;text-align:center;}
-      .input:focus {background:rgba(255,255,255,0.15);box-shadow:0 0 12px #4fc3f7;transform:scale(1.05);}
-      @media screen and (max-width:1024px){.header-container {padding:60px 80px;} .header {font-size:3.5rem;} .description {font-size:1.5rem;} .input {font-size:1.3rem;padding:12px 16px;}}
-      @media screen and (max-width:768px){.header-container {padding:40px 60px;} .header {font-size:3rem;} .description {font-size:1.3rem;} .input {font-size:1.1rem;padding:10px 14px;}}
+      * {margin: 0; padding: 0; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;}
+      html, body {width: 100%; height: 100%; font-family: 'Montserrat', sans-serif; color: #fff; overflow: hidden; display: flex; justify-content: center; align-items: center; background: #000; background-image: linear-gradient(150deg, #0d0d2b, #000, #0d0d2b);}
+      #bgCanvas {position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;}
+      body::after {content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url("assets/img/stars.png") repeat; opacity: 0.2; z-index: -1;}
+      .header-container {width: 90%; max-width: 1200px; padding: 80px 100px; border-radius: 20px; background-color: rgba(0,0,0,0.7); box-shadow: 0 8px 16px rgba(0,0,0,0.9); text-align: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; z-index: 10;}
+      .header {font-family: 'Orbitron', sans-serif; font-size: 4rem; font-weight: 700; margin-bottom: 20px; color: #4fc3f7; text-shadow: 0 4px 8px rgba(0,0,0,0.8); letter-spacing: 2px;}
+      .description {font-size: 1.75rem; margin-bottom: 30px; color: #a8d0e6; letter-spacing: 1px;}
+      .input {font-size: 1.5rem; padding: 15px 20px; width: 80%; max-width: 500px; border-radius: 30px; border: none; outline: none; background: rgba(255,255,255,0.1); color: #e0e0e0; text-align: center; transition: all 0.3s ease-in-out;}
+      .input::placeholder {color: #b0c4de; text-align: center;}
+      .input:focus {background: rgba(255,255,255,0.15); box-shadow: 0 0 12px #4fc3f7; transform: scale(1.05);}
+      @media screen and (max-width: 1024px) {.header-container {padding: 60px 80px;} .header {font-size: 3.5rem;} .description {font-size: 1.5rem;} .input {font-size: 1.3rem; padding: 12px 16px;}}
+      @media screen and (max-width: 768px) {.header-container {padding: 40px 60px;} .header {font-size: 3rem;} .description {font-size: 1.3rem;} .input {font-size: 1.1rem; padding: 10px 14px;}}
     </style>
   </head>
   <body>
@@ -36,132 +36,75 @@
       window.addEventListener("load",function(){
         var canvas=document.getElementById("bgCanvas");
         var ctx=canvas.getContext("2d");
-        var width=canvas.width=window.innerWidth;
-        var height=canvas.height=window.innerHeight;
-        window.addEventListener("resize",function(){
-          width=canvas.width=window.innerWidth;
-          height=canvas.height=window.innerHeight;
-        });
-        var elements=["H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca","Fe","Cu","Zn"];
-        function rand(min,max){return Math.random()*(max-min)+min;}
-        class Atom {
-          constructor(){
-            this.x=rand(0,width);
-            this.y=rand(0,height);
-            this.vx=rand(-0.5,0.5);
-            this.vy=rand(-0.5,0.5);
-            this.radius=rand(20,40);
-            this.orbitRadius=this.radius+rand(5,15);
-            this.electronCount=Math.floor(rand(1,4));
-            this.orbitAngle=rand(0,Math.PI*2);
-            this.orbitSpeed=rand(0.005,0.03);
-            this.formula=elements[Math.floor(rand(0,elements.length))];
-            this.color="hsl("+Math.floor(rand(0,360))+",80%,50%)";
-            this.anger=0;
+        canvas.width=window.innerWidth;
+        canvas.height=window.innerHeight;
+        var particles=[];
+        var particleCount=150;
+        var maxLinkDistance=120;
+        function Particle(){
+          this.x=Math.random()*canvas.width;
+          this.y=Math.random()*canvas.height;
+          this.vx=(Math.random()-0.5)*2;
+          this.vy=(Math.random()-0.5)*2;
+          this.size=Math.random()*3+1;
+          this.alpha=Math.random()*0.5+0.5;
+          this.color="rgba(79,195,247,"+this.alpha+")";
+        }
+        Particle.prototype.update=function(){
+          this.x+=this.vx;
+          this.y+=this.vy;
+          if(this.x<0||this.x>canvas.width){this.vx*=-1;}
+          if(this.y<0||this.y>canvas.height){this.vy*=-1;}
+        };
+        function initParticles(){
+          particles=[];
+          for(var i=0;i<particleCount;i++){
+            particles.push(new Particle());
           }
-          update(){
-            this.x+=this.vx;
-            this.y+=this.vy;
-            if(this.x<this.radius||this.x>width-this.radius){this.vx*=-1;}
-            if(this.y<this.radius||this.y>height-this.radius){this.vy*=-1;}
-            this.orbitAngle+=this.orbitSpeed;
-            if(this.anger>0){this.anger--;}
-          }
-          draw(ctx){
-            var grad=ctx.createRadialGradient(this.x,this.y,this.radius*0.1,this.x,this.y,this.radius);
-            grad.addColorStop(0,this.color);
-            grad.addColorStop(1,"#000");
-            ctx.fillStyle=grad;
+        }
+        initParticles();
+        function drawParticles(){
+          for(var i=0;i<particles.length;i++){
+            var p=particles[i];
             ctx.beginPath();
-            ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+            ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+            ctx.fillStyle=p.color;
             ctx.fill();
-            ctx.font="bold "+(this.radius*0.9)+"px Orbitron";
-            ctx.fillStyle="#fff";
-            ctx.textAlign="center";
-            ctx.textBaseline="middle";
-            ctx.fillText(this.formula,this.x,this.y);
-            var i;
-            for(i=0;i<this.electronCount;i++){
-              var angle=this.orbitAngle+((Math.PI*2*i)/this.electronCount);
-              var ex=this.x+this.orbitRadius*Math.cos(angle);
-              var ey=this.y+this.orbitRadius*Math.sin(angle);
-              ctx.fillStyle="#fff";
-              ctx.beginPath();
-              ctx.arc(ex,ey,5,0,Math.PI*2);
-              ctx.fill();
-              ctx.font="10px sans-serif";
-              ctx.fillText("電子",ex+8,ey+8);
-            }
-            if(this.radius>=30){
-              ctx.font="10px sans-serif";
-              ctx.fillStyle="#ffdd00";
-              ctx.fillText("陽子",this.x-this.radius/2,this.y-this.radius/2);
-              ctx.fillStyle="#00ffdd";
-              ctx.fillText("中性子",this.x+this.radius/2,this.y+this.radius/2);
-            }
-            if(this.anger>0){
-              ctx.strokeStyle="rgba(255,0,0,"+(this.anger/60)+")";
-              ctx.lineWidth=3;
-              ctx.beginPath();
-              ctx.arc(this.x,this.y,this.radius+5,0,Math.PI*2);
-              ctx.stroke();
-            }
           }
         }
-        var atoms=[];
-        var i;
-        for(i=0;i<30;i++){
-          atoms.push(new Atom());
-        }
-        function fuseAtoms(a1,a2){
-          var newAtom=new Atom();
-          newAtom.x=(a1.x+a2.x)/2;
-          newAtom.y=(a1.y+a2.y)/2;
-          newAtom.vx=(a1.vx+a2.vx)/2;
-          newAtom.vy=(a1.vy+a2.vy)/2;
-          newAtom.radius=Math.min(80,Math.sqrt(a1.radius*a1.radius+a2.radius*a2.radius));
-          newAtom.orbitRadius=newAtom.radius+rand(5,15);
-          newAtom.electronCount=a1.electronCount+a2.electronCount;
-          newAtom.formula=a1.formula+"+"+a2.formula;
-          newAtom.color="hsl("+Math.floor(rand(0,360))+",80%,50%)";
-          newAtom.anger=60;
-          return newAtom;
-        }
-        function update(){
-          ctx.clearRect(0,0,width,height);
-          var a,i,j,dx,dy,dist;
-          for(i=0;i<atoms.length;i++){
-            atoms[i].update();
-          }
-          for(i=0;i<atoms.length;i++){
-            for(j=i+1;j<atoms.length;j++){
-              dx=atoms[i].x-atoms[j].x;
-              dy=atoms[i].y-atoms[j].y;
-              dist=Math.sqrt(dx*dx+dy*dy);
-              if(dist<(atoms[i].radius+atoms[j].radius)*0.8){
-                atoms[i].anger=60;
-                atoms[j].anger=60;
-                var angle=Math.atan2(dy,dx);
-                var force=0.2;
-                atoms[i].vx+=Math.cos(angle)*force;
-                atoms[i].vy+=Math.sin(angle)*force;
-                atoms[j].vx-=Math.cos(angle)*force;
-                atoms[j].vy-=Math.sin(angle)*force;
-                if(atoms[i].anger>30 && atoms[j].anger>30 && Math.random()<0.3){
-                  var fused=fuseAtoms(atoms[i],atoms[j]);
-                  atoms[i]=fused;
-                  atoms.splice(j,1);
-                  break;
-                }
+        function drawLines(){
+          for(var i=0;i<particles.length;i++){
+            for(var j=i+1;j<particles.length;j++){
+              var dx=particles[i].x-particles[j].x;
+              var dy=particles[i].y-particles[j].y;
+              var dist=Math.sqrt(dx*dx+dy*dy);
+              if(dist<maxLinkDistance){
+                var lineAlpha=1-dist/maxLinkDistance;
+                ctx.strokeStyle="rgba(79,195,247,"+lineAlpha+")";
+                ctx.lineWidth=0.5;
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x,particles[i].y);
+                ctx.lineTo(particles[j].x,particles[j].y);
+                ctx.stroke();
               }
             }
           }
-          for(i=0;i<atoms.length;i++){
-            atoms[i].draw(ctx);
-          }
-          requestAnimationFrame(update);
         }
-        update();
+        function animate(){
+          ctx.clearRect(0,0,canvas.width,canvas.height);
+          for(var i=0;i<particles.length;i++){
+            particles[i].update();
+          }
+          drawLines();
+          drawParticles();
+          requestAnimationFrame(animate);
+        }
+        animate();
+        window.addEventListener("resize",function(){
+          canvas.width=window.innerWidth;
+          canvas.height=window.innerHeight;
+          initParticles();
+        });
       });
     </script>
   </body>
