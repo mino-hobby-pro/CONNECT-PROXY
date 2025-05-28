@@ -18,7 +18,6 @@
       color: #e0e0e0;
     }
     
-    /* タブバー */
     .tab-bar {
       display: flex;
       align-items: center;
@@ -51,7 +50,6 @@
       color: #81D4FA;
     }
     
-    /* タブのスタイル（控えめなグラデーション） */
     #tabs {
       display: flex;
       flex-grow: 1;
@@ -102,7 +100,6 @@
       background-color: #005fa3;
     }
     
-    /* サファリ風アドレスバー（ユーザー入力不可） */
     .address-bar-container {
       background-color: #262626;
       border-bottom: 1px solid #333;
@@ -121,11 +118,10 @@
       outline: none;
     }
     
-    /* iframe コンテナ（タブバー＋アドレスバー分の高さを除く） */
     .iframe-container {
       position: relative;
       width: 100%;
-      height: calc(100% - 100px); /* タブバー 60px + アドレスバー 40px */
+      height: calc(100% - 100px);
     }
     iframe {
       width: 100%;
@@ -151,7 +147,6 @@
     <button class="add-tab" onclick="addTab()" title="新しいタブを追加">＋</button>
   </div>
   
-  <!-- サファリ風アドレスバー（読み取り専用） -->
   <div class="address-bar-container">
     <input id="addressBar" class="address-bar" type="text" readonly value="">
   </div>
@@ -246,7 +241,6 @@
             displayUrl = iframe.src;
           }
       }
-      // URLが /server.html の場合は connect://start を表示
       if(displayUrl === "/server.html") {
         displayUrl = "connect://start";
       }
