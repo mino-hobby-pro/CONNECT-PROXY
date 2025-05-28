@@ -366,6 +366,15 @@
       }
     });
 
+    // 外部ウィンドウで CONNECT-PROXY を起動する共通処理
+    function openExternal(targetUrl) {
+      const newWin = window.open("", "_blank");
+      newWin.document.open();
+      newWin.document.write(document.documentElement.outerHTML);
+      newWin.document.close();
+      newWin.history.replaceState(null, "", targetUrl);
+    }
+
     // 各オプションメニューの動作
     function actionNewTab() {
       addTab();
@@ -384,11 +393,11 @@
       hideOptionsMenu();
     }
     function actionAboutBlank() {
-      addTab("about:blank");
+      openExternal("about:blank");
       hideOptionsMenu();
     }
     function actionBlob() {
-      addTab("blob:");
+      openExternal("blob:");
       hideOptionsMenu();
     }
     function hideOptionsMenu() {
