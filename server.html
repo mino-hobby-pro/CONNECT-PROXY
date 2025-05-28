@@ -119,11 +119,12 @@
         width: 80%;
         max-width: 500px;
         border-radius: 30px;
-        border: none;
+        /* 青色の枠線を追加 */
+        border: 2px solid rgba(79, 195, 247, 0.8);
         outline: none;
         background: rgba(255, 255, 255, 0.1);
         color: #e0e0e0;
-        transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+        transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;
         text-align: center;
         animation: fadeInUp 1.5s ease-out both;
         animation-delay: 1s;
@@ -135,6 +136,7 @@
 
       .input:focus {
         background: rgba(255, 255, 255, 0.15);
+        border-color: #4fc3f7;
         box-shadow: 0 0 12px #4fc3f7;
         transform: scale(1.02);
       }
