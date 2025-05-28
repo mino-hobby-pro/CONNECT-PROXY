@@ -51,7 +51,7 @@
       color: #81D4FA;
     }
     
-    /* タブのスタイル（より魅力的に） */
+    /* タブのスタイル（控えめなグラデーション） */
     #tabs {
       display: flex;
       flex-grow: 1;
@@ -62,7 +62,7 @@
       align-items: center;
       padding: 10px 15px;
       margin-right: 5px;
-      background: linear-gradient(135deg, #005aa7, #001f3f);
+      background: linear-gradient(135deg, #002240, #001f3f);
       border-radius: 8px;
       cursor: pointer;
       white-space: nowrap;
@@ -70,10 +70,10 @@
     }
     .tab:hover {
       transform: scale(1.05);
-      background: linear-gradient(135deg, #0074D9, #005fa3);
+      background: linear-gradient(135deg, #002840, #001f3f);
     }
     .tab.active {
-      background: linear-gradient(135deg, #0074D9, #004a75);
+      background: linear-gradient(135deg, #002e50, #001f3f);
     }
     .tab .close-btn {
       margin-left: 8px;
@@ -102,7 +102,7 @@
       background-color: #005fa3;
     }
     
-    /* アドレスバー（サファリ風：ユーザー入力不可） */
+    /* サファリ風アドレスバー（ユーザー入力不可） */
     .address-bar-container {
       background-color: #262626;
       border-bottom: 1px solid #333;
@@ -121,11 +121,11 @@
       outline: none;
     }
     
-    /* iframe コンテナの高さをタブバー＋アドレスバー分引く */
+    /* iframe コンテナ（タブバー＋アドレスバー分の高さを除く） */
     .iframe-container {
       position: relative;
       width: 100%;
-      height: calc(100% - 100px); /* 60px (タブバー) + 40px (アドレスバー) */
+      height: calc(100% - 100px); /* タブバー 60px + アドレスバー 40px */
     }
     iframe {
       width: 100%;
@@ -151,7 +151,7 @@
     <button class="add-tab" onclick="addTab()" title="新しいタブを追加">＋</button>
   </div>
   
-  <!-- サファリ風アドレスバー（ユーザー入力不可） -->
+  <!-- サファリ風アドレスバー（読み取り専用） -->
   <div class="address-bar-container">
     <input id="addressBar" class="address-bar" type="text" readonly value="">
   </div>
@@ -170,7 +170,6 @@
       iframe.id = id;
       iframe.src = url;
 
-      // 最初のタブをデフォルトアクティブとする
       if (!currentTabId) {
         iframe.classList.add('active');
         currentTabId = id;
@@ -236,11 +235,9 @@
       try {
           let fullUrl = iframe.contentWindow.location.href;
           let parsedUrl = new URL(fullUrl);
-          // 表示部分：プロトコルとホスト部分は除く
           displayUrl = parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
           if (!displayUrl) displayUrl = '/';
       } catch(e) {
-          // アクセスできない（クロスオリジン等）場合は iframe.src から試す
           try {
             let parsedUrl = new URL(iframe.src, window.location.href);
             displayUrl = parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
@@ -248,6 +245,10 @@
           } catch(e) {
             displayUrl = iframe.src;
           }
+      }
+      // URLが /server.html の場合は connect://start を表示
+      if(displayUrl === "/server.html") {
+        displayUrl = "connect://start";
       }
       addressInput.value = displayUrl;
     }
@@ -270,7 +271,6 @@
       
       if (currentTabId === targetId) {
         let newActiveTabId = null;
-
         if (tabs[index]) {
           newActiveTabId = tabs[index];
         } else if (tabs[index - 1]) {  
