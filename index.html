@@ -6,6 +6,7 @@
   <title>connect-proxy</title>
   <link rel="icon" type="image/x-icon" href="assets/img/google.png">
   <style>
+    /* 全体リセット */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -18,6 +19,7 @@
       color: #e0e0e0;
     }
     
+    /* タブバー */
     .tab-bar {
       display: flex;
       align-items: center;
@@ -32,24 +34,6 @@
       color: #4FC3F7;
       margin-right: 20px;
     }
-    .nav-controls {
-      display: flex;
-      align-items: center;
-      margin-right: 15px;
-    }
-    .nav-controls button {
-      background: none;
-      border: none;
-      color: #4FC3F7;
-      font-size: 20px;
-      margin-right: 10px;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .nav-controls button:hover {
-      color: #81D4FA;
-    }
-    
     #tabs {
       display: flex;
       flex-grow: 1;
@@ -100,28 +84,85 @@
       background-color: #005fa3;
     }
     
+    /* アドレスバーコンテナ（サファリ風） */
     .address-bar-container {
+      display: flex;
+      align-items: center;
       background-color: #262626;
       border-bottom: 1px solid #333;
       padding: 5px 10px;
     }
+    .address-nav {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+    }
+    .address-nav button {
+      background: none;
+      border: none;
+      color: #4FC3F7;
+      font-size: 18px;
+      cursor: pointer;
+      margin-right: 5px;
+      transition: color 0.2s;
+    }
+    .address-nav button:hover {
+      color: #81D4FA;
+    }
     .address-bar {
-      width: 100%;
+      flex-grow: 1;
       padding: 6px 10px;
       border: none;
       border-radius: 5px;
       background: #404040;
       color: #e0e0e0;
       font-size: 14px;
+      margin-right: 10px;
     }
     .address-bar:focus {
       outline: none;
     }
+    .address-options {
+      position: relative;
+    }
+    .address-options button#optionsBtn {
+      background: none;
+      border: none;
+      color: #4FC3F7;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .options-menu {
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #404040;
+      border: 1px solid #333;
+      border-radius: 5px;
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+    }
+    .options-menu button {
+      background: none;
+      border: none;
+      color: #e0e0e0;
+      padding: 8px 12px;
+      text-align: left;
+      width: 100%;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .options-menu button:hover {
+      background: #555;
+    }
     
+    /* iframe コンテナ（タブバー＋アドレスバー分除く） */
     .iframe-container {
       position: relative;
       width: 100%;
-      height: calc(100% - 100px);
+      height: calc(100% - 120px); /* タブバー60px + アドレスバー約60px */
     }
     iframe {
       width: 100%;
@@ -136,21 +177,34 @@
 </head>
 <body>
 
+  <!-- タブバー -->
   <div class="tab-bar">
     <div class="brand">CONNECT=PROXY</div>
-    <div class="nav-controls">
-      <button id="backBtn" title="戻る">←</button>
-      <button id="forwardBtn" title="進む">→</button>
-      <button id="refreshBtn" title="更新">⟳</button>
-    </div>
     <div id="tabs"></div>
     <button class="add-tab" onclick="addTab()" title="新しいタブを追加">＋</button>
   </div>
   
+  <!-- アドレスバー -->
   <div class="address-bar-container">
+    <div class="address-nav">
+      <button id="backBtn" title="戻る">←</button>
+      <button id="forwardBtn" title="進む">→</button>
+      <button id="refreshBtn" title="更新">⟳</button>
+    </div>
     <input id="addressBar" class="address-bar" type="text" readonly value="">
+    <div class="address-options">
+      <button id="optionsBtn" title="詳細">⋮</button>
+      <div id="optionsMenu" class="options-menu">
+        <button onclick="actionNewTab()">新しいタブを開く</button>
+        <button onclick="actionMonitorMode()">監視モードに移行</button>
+        <button onclick="actionAIMode()">AI</button>
+        <button onclick="actionAboutBlank()">about:blankを開く</button>
+        <button onclick="actionBlob()">blobを開く</button>
+      </div>
+    </div>
   </div>
 
+  <!-- iframe コンテナ -->
   <div class="iframe-container" id="iframeContainer"></div>
   
   <script>
@@ -228,20 +282,21 @@
       let displayUrl = '';
       const iframe = document.getElementById(id);
       try {
-          let fullUrl = iframe.contentWindow.location.href;
-          let parsedUrl = new URL(fullUrl);
+        let fullUrl = iframe.contentWindow.location.href;
+        let parsedUrl = new URL(fullUrl);
+        displayUrl = parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+        if (!displayUrl) displayUrl = '/';
+      } catch(e) {
+        try {
+          let parsedUrl = new URL(iframe.src, window.location.href);
           displayUrl = parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
           if (!displayUrl) displayUrl = '/';
-      } catch(e) {
-          try {
-            let parsedUrl = new URL(iframe.src, window.location.href);
-            displayUrl = parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
-            if (!displayUrl) displayUrl = '/';
-          } catch(e) {
-            displayUrl = iframe.src;
-          }
+        } catch(e) {
+          displayUrl = iframe.src;
+        }
       }
-      if(displayUrl === "/server.html") {
+      // 特定条件: URLが /server.html の場合は connect://start を表示
+      if (displayUrl === "/server.html") {
         displayUrl = "connect://start";
       }
       addressInput.value = displayUrl;
@@ -281,6 +336,7 @@
       }
     }
 
+    // アドレスバーのナビゲーション操作
     document.getElementById('backBtn').addEventListener('click', function(){
       if (currentTabId) {
         document.getElementById(currentTabId).contentWindow.history.back();
@@ -296,7 +352,50 @@
         document.getElementById(currentTabId).contentWindow.location.reload();
       }
     });
-    
+
+    // オプションメニューのトグル処理
+    document.getElementById('optionsBtn').addEventListener('click', function(event){
+      event.stopPropagation();
+      var menu = document.getElementById('optionsMenu');
+      menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    });
+    document.addEventListener('click', function(){
+      var menu = document.getElementById('optionsMenu');
+      if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+      }
+    });
+
+    // 各オプションメニューの動作
+    function actionNewTab() {
+      addTab();
+      hideOptionsMenu();
+    }
+    function actionMonitorMode() {
+      if (currentTabId && document.getElementById(currentTabId)) {
+        document.getElementById(currentTabId).src = "/notp.html";
+      }
+      hideOptionsMenu();
+    }
+    function actionAIMode() {
+      if (currentTabId && document.getElementById(currentTabId)) {
+        document.getElementById(currentTabId).src = "ai.html";
+      }
+      hideOptionsMenu();
+    }
+    function actionAboutBlank() {
+      addTab("about:blank");
+      hideOptionsMenu();
+    }
+    function actionBlob() {
+      addTab("blob:");
+      hideOptionsMenu();
+    }
+    function hideOptionsMenu() {
+      var menu = document.getElementById('optionsMenu');
+      menu.style.display = 'none';
+    }
+
     window.addEventListener('load', function(){
       addTab();
     });
