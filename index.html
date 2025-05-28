@@ -6,7 +6,6 @@
   <title>connect-proxy</title>
   <link rel="icon" type="image/x-icon" href="assets/img/google.png">
   <style>
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -19,7 +18,7 @@
       color: #e0e0e0;
     }
     
-
+    /* タブバー */
     .tab-bar {
       display: flex;
       align-items: center;
@@ -52,7 +51,7 @@
       color: #81D4FA;
     }
     
-
+    /* タブのスタイル（より魅力的に） */
     #tabs {
       display: flex;
       flex-grow: 1;
@@ -63,17 +62,18 @@
       align-items: center;
       padding: 10px 15px;
       margin-right: 5px;
-      background-color: #001f3f;
-      border-radius: 4px;
+      background: linear-gradient(135deg, #005aa7, #001f3f);
+      border-radius: 8px;
       cursor: pointer;
       white-space: nowrap;
-      transition: background-color 0.2s;
-    }
-    .tab.active {
-      background-color: #0074D9;
+      transition: transform 0.2s, background 0.3s;
     }
     .tab:hover {
-      background-color: #005fa3;
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #0074D9, #005fa3);
+    }
+    .tab.active {
+      background: linear-gradient(135deg, #0074D9, #004a75);
     }
     .tab .close-btn {
       margin-left: 8px;
@@ -83,6 +83,7 @@
       border: none;
       font-size: 14px;
       cursor: pointer;
+      transition: color 0.2s;
     }
     .tab .close-btn:hover {
       color: #ff4136;
@@ -101,11 +102,30 @@
       background-color: #005fa3;
     }
     
-
+    /* アドレスバー（サファリ風：ユーザー入力不可） */
+    .address-bar-container {
+      background-color: #262626;
+      border-bottom: 1px solid #333;
+      padding: 5px 10px;
+    }
+    .address-bar {
+      width: 100%;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 5px;
+      background: #404040;
+      color: #e0e0e0;
+      font-size: 14px;
+    }
+    .address-bar:focus {
+      outline: none;
+    }
+    
+    /* iframe コンテナの高さをタブバー＋アドレスバー分引く */
     .iframe-container {
       position: relative;
       width: 100%;
-      height: calc(100% - 60px);
+      height: calc(100% - 100px); /* 60px (タブバー) + 40px (アドレスバー) */
     }
     iframe {
       width: 100%;
@@ -131,6 +151,10 @@
     <button class="add-tab" onclick="addTab()" title="新しいタブを追加">＋</button>
   </div>
   
+  <!-- サファリ風アドレスバー（ユーザー入力不可） -->
+  <div class="address-bar-container">
+    <input id="addressBar" class="address-bar" type="text" readonly value="">
+  </div>
 
   <div class="iframe-container" id="iframeContainer"></div>
   
@@ -139,25 +163,24 @@
     let currentTabId = null;
     let tabIdCounter = 0;
 
-
     function addTab(url = "server.html") {
       const id = 'tab-' + (++tabIdCounter);
       
-
       const iframe = document.createElement('iframe');
       iframe.id = id;
       iframe.src = url;
 
+      // 最初のタブをデフォルトアクティブとする
       if (!currentTabId) {
         iframe.classList.add('active');
         currentTabId = id;
       }
       iframe.addEventListener('load', function(){
         updateTabTitle(id);
+        updateAddressBar(id);
       });
       document.getElementById('iframeContainer').appendChild(iframe);
       
-
       const tabButton = document.createElement('div');
       tabButton.classList.add('tab');
       tabButton.id = 'button-' + id;
@@ -182,9 +205,7 @@
       switchTab(id);
     }
 
-
     function switchTab(id) {
-
       if (currentTabId && document.getElementById(currentTabId)) {
         document.getElementById(currentTabId).classList.remove('active');
         document.getElementById('button-' + currentTabId).classList.remove('active');
@@ -192,8 +213,8 @@
       currentTabId = id;
       document.getElementById(id).classList.add('active');
       document.getElementById('button-' + id).classList.add('active');
+      updateAddressBar(id);
     }
-
 
     function updateTabTitle(id) {
       try {
@@ -208,11 +229,32 @@
       }
     }
 
+    function updateAddressBar(id) {
+      const addressInput = document.getElementById("addressBar");
+      let displayUrl = '';
+      const iframe = document.getElementById(id);
+      try {
+          let fullUrl = iframe.contentWindow.location.href;
+          let parsedUrl = new URL(fullUrl);
+          // 表示部分：プロトコルとホスト部分は除く
+          displayUrl = parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+          if (!displayUrl) displayUrl = '/';
+      } catch(e) {
+          // アクセスできない（クロスオリジン等）場合は iframe.src から試す
+          try {
+            let parsedUrl = new URL(iframe.src, window.location.href);
+            displayUrl = parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+            if (!displayUrl) displayUrl = '/';
+          } catch(e) {
+            displayUrl = iframe.src;
+          }
+      }
+      addressInput.value = displayUrl;
+    }
 
     function closeTab(targetId) {
       const iframe = document.getElementById(targetId);
       const tabButton = document.getElementById('button-' + targetId);
-
 
       if (iframe && iframe.parentNode) {
         iframe.parentNode.removeChild(iframe);
@@ -221,13 +263,11 @@
         tabButton.parentNode.removeChild(tabButton);
       }
       
-
       const index = tabs.indexOf(targetId);
       if (index !== -1) {
         tabs.splice(index, 1);
       }
       
-
       if (currentTabId === targetId) {
         let newActiveTabId = null;
 
@@ -241,13 +281,11 @@
           currentTabId = newActiveTabId;
           switchTab(newActiveTabId);
         } else {
-
-          currentTabId = null;  
+          currentTabId = null;
           addTab();
         }
       }
     }
-
 
     document.getElementById('backBtn').addEventListener('click', function(){
       if (currentTabId) {
@@ -265,7 +303,6 @@
       }
     });
     
-
     window.addEventListener('load', function(){
       addTab();
     });
