@@ -1,111 +1,260 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CONNECT=PROXY</title>
     <link rel="icon" type="image/x-icon" href="assets/img/google.png" />
-    <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700|Montserrat:400,700&display=swap" rel="stylesheet" />
+
+    <!-- Google Fonts for a futuristic touch -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Orbitron:400,700|Montserrat:400,700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-      * {margin: 0; padding: 0; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;}
-      html, body {width: 100%; height: 100%; font-family: 'Montserrat', sans-serif; color: #fff; overflow: hidden; display: flex; justify-content: center; align-items: center; background: #000; background-image: linear-gradient(150deg, #0d0d2b, #000, #0d0d2b);}
-      #bgCanvas {position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;}
-      body::after {content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url("assets/img/stars.png") repeat; opacity: 0.2; z-index: -1;}
-      .header-container {width: 90%; max-width: 1200px; padding: 80px 100px; border-radius: 20px; background-color: rgba(0,0,0,0.7); box-shadow: 0 8px 16px rgba(0,0,0,0.9); text-align: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; z-index: 10;}
-      .header {font-family: 'Orbitron', sans-serif; font-size: 4rem; font-weight: 700; margin-bottom: 20px; color: #4fc3f7; text-shadow: 0 4px 8px rgba(0,0,0,0.8); letter-spacing: 2px;}
-      .description {font-size: 1.75rem; margin-bottom: 30px; color: #a8d0e6; letter-spacing: 1px;}
-      .input {font-size: 1.5rem; padding: 15px 20px; width: 80%; max-width: 500px; border-radius: 30px; border: none; outline: none; background: rgba(255,255,255,0.1); color: #e0e0e0; text-align: center; transition: all 0.3s ease-in-out;}
-      .input::placeholder {color: #b0c4de; text-align: center;}
-      .input:focus {background: rgba(255,255,255,0.15); box-shadow: 0 0 12px #4fc3f7; transform: scale(1.05);}
-      @media screen and (max-width: 1024px) {.header-container {padding: 60px 80px;} .header {font-size: 3.5rem;} .description {font-size: 1.5rem;} .input {font-size: 1.3rem; padding: 12px 16px;}}
-      @media screen and (max-width: 768px) {.header-container {padding: 40px 60px;} .header {font-size: 3rem;} .description {font-size: 1.3rem;} .input {font-size: 1.1rem; padding: 10px 14px;}}
+      /* グローバルリセット & ボックスサイズ設定 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        font-family: 'Montserrat', sans-serif;
+        color: #ffffff;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        /* アニメーションするグラデーション背景 */
+        background: linear-gradient(45deg, #000000, #1a1a1a, #000000);
+        background-size: 600% 600%;
+        animation: gradientAnimation 20s ease infinite;
+      }
+
+      /* Canvas用スタイル：全体背景に配置 */
+      #particleCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ヘッダーコンテナはCanvasより上に表示 */
+      .header-container {
+        width: 100%;
+        max-width: 1200px;
+        padding: 80px;
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.6); /* 半透明のオーバーレイ */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+        text-align: center;
+        backdrop-filter: blur(8px);
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes gradientAnimation {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .header {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #4fc3f7;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        animation: fadeInDown 1.5s ease-out both;
+      }
+
+      @keyframes fadeInDown {
+        0% {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .description {
+        font-size: 1.75rem;
+        margin-bottom: 30px;
+        color: #a8d0e6;
+        letter-spacing: 1px;
+        animation: fadeIn 1.5s ease-out both;
+        animation-delay: 0.5s;
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .input {
+        font-size: 1.5rem;
+        padding: 15px 20px;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 30px;
+        border: none;
+        outline: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: #e0e0e0;
+        transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+        text-align: center;
+        animation: fadeInUp 1.5s ease-out both;
+        animation-delay: 1s;
+      }
+
+      .input::placeholder {
+        color: #b0c4de;
+      }
+
+      .input:focus {
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 12px #4fc3f7;
+        transform: scale(1.02);
+      }
+
+      @keyframes fadeInUp {
+        0% {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
     </style>
   </head>
   <body>
-    <canvas id="bgCanvas"></canvas>
+    <!-- Canvas for particle animation -->
+    <canvas id="particleCanvas"></canvas>
+
     <div class="header-container">
       <h1 class="header">CONNECT=PROXY</h1>
       <p class="description">HELLO CONNECT</p>
-      <input type="text" class="input" id="searchInput" name="search" placeholder="Search or enter a URL..." />
+      <input
+        type="text"
+        class="input"
+        id="searchInput"
+        name="search"
+        placeholder="Search or enter a URL..."
+      />
     </div>
+
     <script src="./uv/uv.bundle.js"></script>
     <script src="./uv/uv.config.js"></script>
     <script src="./assets/register-sw.js"></script>
     <script src="./assets/script.js" defer></script>
+
+    <!-- パーティクルアニメーション用スクリプト -->
     <script>
-      window.addEventListener("load",function(){
-        var canvas=document.getElementById("bgCanvas");
-        var ctx=canvas.getContext("2d");
-        canvas.width=window.innerWidth;
-        canvas.height=window.innerHeight;
-        var particles=[];
-        var particleCount=150;
-        var maxLinkDistance=120;
-        function Particle(){
-          this.x=Math.random()*canvas.width;
-          this.y=Math.random()*canvas.height;
-          this.vx=(Math.random()-0.5)*2;
-          this.vy=(Math.random()-0.5)*2;
-          this.size=Math.random()*3+1;
-          this.alpha=Math.random()*0.5+0.5;
-          this.color="rgba(79,195,247,"+this.alpha+")";
+      (function () {
+        const canvas = document.getElementById("particleCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
         }
-        Particle.prototype.update=function(){
-          this.x+=this.vx;
-          this.y+=this.vy;
-          if(this.x<0||this.x>canvas.width){this.vx*=-1;}
-          if(this.y<0||this.y>canvas.height){this.vy*=-1;}
-        };
-        function initParticles(){
-          particles=[];
-          for(var i=0;i<particleCount;i++){
-            particles.push(new Particle());
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        // 粒子の設定
+        const numParticles = 80; // 粒子の数を調整できます
+        let particles = [];
+        const maxLinkDistance = 120; // 粒子間の線を描画する最大距離
+
+        class Particle {
+          constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            // 粒子の移動速度と方向
+            this.vx = (Math.random() - 0.5) * 1.5;
+            this.vy = (Math.random() - 0.5) * 1.5;
+            // 粒子のサイズ
+            this.radius = Math.random() * 2 + 1;
           }
-        }
-        initParticles();
-        function drawParticles(){
-          for(var i=0;i<particles.length;i++){
-            var p=particles[i];
+          update() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // キャンバス端でのラップアラウンド
+            if (this.x < 0) this.x = canvas.width;
+            if (this.x > canvas.width) this.x = 0;
+            if (this.y < 0) this.y = canvas.height;
+            if (this.y > canvas.height) this.y = 0;
+          }
+          draw() {
             ctx.beginPath();
-            ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-            ctx.fillStyle=p.color;
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fillStyle = "#ffffff";
             ctx.fill();
           }
         }
-        function drawLines(){
-          for(var i=0;i<particles.length;i++){
-            for(var j=i+1;j<particles.length;j++){
-              var dx=particles[i].x-particles[j].x;
-              var dy=particles[i].y-particles[j].y;
-              var dist=Math.sqrt(dx*dx+dy*dy);
-              if(dist<maxLinkDistance){
-                var lineAlpha=1-dist/maxLinkDistance;
-                ctx.strokeStyle="rgba(79,195,247,"+lineAlpha+")";
-                ctx.lineWidth=0.5;
+
+        // 粒子の初期化
+        for (let i = 0; i < numParticles; i++) {
+          particles.push(new Particle());
+        }
+
+        function animate() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // 各粒子の更新と描画
+          for (let particle of particles) {
+            particle.update();
+            particle.draw();
+          }
+
+          // 近接する粒子同士の連結線描画（線の濃さは距離により変化）
+          for (let i = 0; i < numParticles; i++) {
+            for (let j = i + 1; j < numParticles; j++) {
+              const dx = particles[i].x - particles[j].x;
+              const dy = particles[i].y - particles[j].y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+              if (distance < maxLinkDistance) {
                 ctx.beginPath();
-                ctx.moveTo(particles[i].x,particles[i].y);
-                ctx.lineTo(particles[j].x,particles[j].y);
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.strokeStyle =
+                  "rgba(255,255,255," + (1 - distance / maxLinkDistance) + ")";
+                ctx.lineWidth = 1;
                 ctx.stroke();
               }
             }
           }
-        }
-        function animate(){
-          ctx.clearRect(0,0,canvas.width,canvas.height);
-          for(var i=0;i<particles.length;i++){
-            particles[i].update();
-          }
-          drawLines();
-          drawParticles();
+
           requestAnimationFrame(animate);
         }
         animate();
-        window.addEventListener("resize",function(){
-          canvas.width=window.innerWidth;
-          canvas.height=window.innerHeight;
-          initParticles();
-        });
-      });
+      })();
     </script>
   </body>
 </html>
