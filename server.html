@@ -171,7 +171,7 @@
   <div class="header-container">
     <h1 class="header">CONNECT=PROXY</h1>
     <p class="description">already connected</p>
-    <inputtype="text" class="input" id="searchInput" name="search" placeholder="Search or enter a URL..." />
+    <input type="text" class="input" id="searchInput" name="search" placeholder="Search or enter a URL..." />
 
     <!-- ───────── ショートカットリンク ───────── -->
     <div class="shortcut-container">
@@ -257,7 +257,8 @@
               ctx.beginPath();
               ctx.moveTo(particles[i].x, particles[i].y);
               ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.strokeStyle = "rgba(255,255,255," + (1 - distance / maxLinkDistance) + ")";
+              ctx.strokeStyle =
+                "rgba(255,255,255," + (1 - distance / maxLinkDistance) + ")";
               ctx.lineWidth = 1;
               ctx.stroke();
             }
