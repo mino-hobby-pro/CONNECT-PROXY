@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const url = new URL(verifiedHref);
       const params = url.searchParams;
       const id = params.get('v');
-      iframe.src = `https://lace-water-ketch.glitch.me/stream/${id}`
+      iframe.src = `stream.html#${id}`
       const onPlayerReady = event => {
         document.title = `${event.target.videoTitle} - ${defaultTitle}`;
       }
