@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>MIN2-BBS</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #e6ecf0; padding: 20px; height: 100vh; display: flex; justify-content: center; align-items: center; }
+    #chatContainer {
+      width: 100%;
+      max-width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+      position: relative;
+    }
+    #styleToggleBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 6px 12px;
+      font-size: 0.9em;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #007bff;
+      color: #fff;
+      transition: background 0.2s;
+      z-index: 10;
+    }
+    #styleToggleBtn:hover {
+      background: #0056b3;
+    }
+    h1 { text-align: center; margin-bottom: 10px; color: #333; font-size: 1.8em; }
+    #chatLog {
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+      border-radius: 4px;
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 15px;
+      margin-bottom: 10px;
+      position: relative;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      word-wrap: break-word;
+      min-height: 50px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .card-header strong {
+      color: #333;
+      font-size: 1em;
+      word-wrap: break-word;
+    }
+    .timestamp {
+      font-size: 0.75em;
+      color: #888;
+      word-wrap: break-word;
+    }
+    .message-text {
+      font-size: 1em;
+      color: #222;
+      margin-bottom: 10px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+    .reactions { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; flex-wrap: wrap; }
+    .reactionArea {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .reactionBtn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1.4em;
+      transition: transform 0.2s, color 0.2s;
+    }
+    .reactionBtn:hover { transform: scale(1.2); color: #007bff; }
+    .reactionCount {
+      font-size: 0.9em;
+      color: #555;
+    }
+    .seedValue {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7em;
+      color: #555;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      word-wrap: break-word;
+    }
+    #chatForm {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    #chatForm input[type="text"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+    #username { min-width: 100px; max-width: 150px; }
+    #seedInput { max-width: 150px; }
+    #message { flex: 3; min-width: 200px; }
+    #chatForm button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.2s;
+    }
+    #chatForm button:hover { background: #0056b3; }
+    #deleteSection {
+      margin-top: 20px;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #eaeaea;
+      border-radius: 4px;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    #deleteSection input[type="password"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 200px;
+      font-size: 1em;
+    }
+    #deleteSection button {
+      padding: 10px 20px;
+      border: none;
+      background: #dc3545;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.2s;
+    }
+    #deleteSection button:hover { background: #c82333; }
+  </style>
+  <script>
+    function encryptSeed(seed, key) {
+      const base64 = btoa(seed);
+      const shift = key.length;
+      let encrypted = "";
+      for (let i = 0; i < base64.length; i++) {
+        const charCode = base64.charCodeAt(i);
+        encrypted += String.fromCharCode(charCode + shift);
+      }
+      return encrypted;
+    }
+    function decryptSeed(encrypted, key) {
+      const shift = key.length;
+      let base64 = "";
+      for (let i = 0; i < encrypted.length; i++) {
+        const charCode = encrypted.charCodeAt(i);
+        base64 += String.fromCharCode(charCode - shift);
+      }
+      const seed = atob(base64);
+      return seed;
+    }
+  </script>
+</head>
+<body>
+  <button id="styleToggleBtn">スタイル切り替え</button>
+  <div id="chatContainer">
+    <h1>MIN2-BBS</h1>
+    <div id="chatLog"></div>
+    <form id="chatForm">
+      <input type="text" id="username" placeholder="ユーザー名" required maxlength="50" />
+      <input type="text" id="seedInput" placeholder="シード値(英数字)" maxlength="5" required />
+      <input type="text" id="message" placeholder="メッセージを入力" required maxlength="300" />
+      <button type="submit">送信</button>
+    </form>
+    <div id="deleteSection">
+      <label for="deletePassword">パスワード:</label>
+      <input type="password" id="deletePassword" placeholder="パスワード" />
+      <button id="deleteButton">全コメント削除</button>
+    </div>
+  </div>
+  <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+  <script>
+    const API_URL = "https://min-bbs-server.glitch.me";
+    const socket = io(API_URL);
+    const chatLog = document.getElementById("chatLog");
+    const chatForm = document.getElementById("chatForm");
+    const usernameInput = document.getElementById("username");
+    const seedInput = document.getElementById("seedInput");
+    const messageInput = document.getElementById("message");
+    const deletePasswordInput = document.getElementById("deletePassword");
+    const deleteButton = document.getElementById("deleteButton");
+    const styleToggleBtn = document.getElementById("styleToggleBtn");
+    let messageCount = 0;
+    let isDarkMode = false;
+
+    function escapeHTML(str) {
+      if (!str) return "";
+      return str.replace(/[&<>"']/g, match => {
+        const escapes = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+        return escapes[match];
+      });
+    }
+
+    function addMessage(message, messageId) {
+      const cardDiv = document.createElement("div");
+      cardDiv.className = "card";
+      cardDiv.dataset.id = messageId;
+
+      const headerDiv = document.createElement("div");
+      headerDiv.className = "card-header";
+      headerDiv.innerHTML = `
+        <strong>${escapeHTML(message.username)}</strong>
+        <span class="timestamp">[${escapeHTML(message.time)}]</span>
+      `;
+
+      const textDiv = document.createElement("div");
+      textDiv.className = "message-text";
+      textDiv.innerHTML = escapeHTML(message.message);
+
+      const reactionsDiv = document.createElement("div");
+      reactionsDiv.className = "reactions";
+
+      const reactionTypes = ["👍", "😡"];
+      reactionTypes.forEach(reactionType => {
+        const reactionArea = document.createElement("div");
+        reactionArea.className = "reactionArea";
+        const btn = document.createElement("button");
+        btn.className = "reactionBtn";
+        btn.setAttribute("data-reaction", reactionType);
+        btn.textContent = reactionType;
+        btn.addEventListener("click", () => {
+          socket.emit("updateReaction", { messageId: Number(cardDiv.dataset.id), reaction: reactionType });
+        });
+        const countSpan = document.createElement("span");
+        countSpan.className = "reactionCount";
+        countSpan.setAttribute("data-reaction", reactionType);
+        countSpan.textContent = (message.reactions && message.reactions[reactionType]) || 0;
+        reactionArea.appendChild(btn);
+        reactionArea.appendChild(countSpan);
+        reactionsDiv.appendChild(reactionArea);
+      });
+
+      const seedDiv = document.createElement("div");
+      seedDiv.className = "seedValue";
+      seedDiv.innerHTML = escapeHTML(message.seed);
+
+      cardDiv.appendChild(headerDiv);
+      cardDiv.appendChild(textDiv);
+      cardDiv.appendChild(reactionsDiv);
+      cardDiv.appendChild(seedDiv);
+
+      chatLog.appendChild(cardDiv);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    fetch(API_URL + "/api/messages")
+      .then(response => response.json())
+      .then(data => {
+        data.forEach((msg, index) => {
+          addMessage(msg, index);
+          messageCount++;
+        });
+      })
+      .catch(error => console.error("メッセージ取得エラー:", error));
+
+    chatForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+      const username = usernameInput.value.trim();
+      const seedVal = seedInput.value.trim();
+      const messageText = messageInput.value.trim();
+      if (!username || !seedVal || !messageText) return;
+      const time = new Date().toLocaleString('ja-JP');
+
+      const encryptedSeed = encryptSeed(seedVal, seedVal);
+      const messageData = {
+        username: username,
+        message: messageText,
+        time: time,
+        reactions: { "👍": 0, "😡": 0 },
+        seed: encryptedSeed
+      };
+      fetch(API_URL + "/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(messageData)
+      })
+      .then(response => {
+        if (!response.ok) { throw new Error("送信に失敗しました"); }
+        messageInput.value = "";
+      })
+      .catch(error => console.error("メッセージ送信エラー:", error));
+    });
+
+    socket.on("newMessage", function(message) {
+      addMessage(message, messageCount);
+      messageCount++;
+    });
+
+    socket.on("updateReaction", function(data) {
+      const { messageId, reactions } = data;
+      const messageDiv = document.querySelector(`[data-id="${messageId}"]`);
+      if (messageDiv) {
+        for (const reactionType in reactions) {
+          const countSpan = messageDiv.querySelector(`.reactionCount[data-reaction="${reactionType}"]`);
+          if (countSpan) {
+            countSpan.textContent = reactions[reactionType];
+          }
+        }
+      }
+    });
+
+    socket.on("clearMessages", function() {
+      chatLog.innerHTML = "";
+      messageCount = 0;
+    });
+
+    document.getElementById("deleteButton").addEventListener("click", function() {
+      const password = deletePasswordInput.value.trim();
+      if (!password) {
+        alert("パスワードを入力してください");
+        return;
+      }
+      fetch(API_URL + "/api/pass", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "fetch"
+        },
+        body: JSON.stringify({ password: password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert("削除失敗: " + data.error);
+        } else {
+          alert("すべてのコメントが削除されました");
+          chatLog.innerHTML = "";
+          messageCount = 0;
+        }
+      })
+      .catch(error => console.error("削除エラー:", error));
+    });
+
+    document.getElementById("styleToggleBtn").addEventListener("click", () => {
+      isDarkMode = !isDarkMode;
+      if (isDarkMode) {
+        applyDarkMode();
+      } else {
+        applyDefaultStyle();
+      }
+    });
+
+    function applyDarkMode() {
+      document.body.style.background = "#121212";
+      document.body.style.color = "#eee";
+
+      const styleSheet = document.styleSheets[0];
+      styleSheet.insertRule(`
+        #chatContainer {
+          background: #1e1e1e !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        h1 {
+          color: #00ffff !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        #chatLog {
+          border-color: #444 !important;
+          background: #2a2a2a !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        .card {
+          background: #333 !important;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        .card:hover {
+          background: #444 !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        .card-header strong {
+          color: #00ffff !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        .timestamp {
+          color: #aaa !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        .message-text {
+          color: #ddd !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        .reactions {
+          margin-bottom: 8px !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        .reactionBtn {
+          color: #ccc !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        .reactionBtn:hover {
+          color: #00ffff !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        .reactionCount {
+          color: #999 !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        #deleteSection {
+          background: #1a1a1a !important;
+          border-color: #444 !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        #deletePassword {
+          background: #2a2a2a !important;
+          border-color: #555 !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        #deleteButton {
+          background: #dc3545 !important;
+        }
+      `, styleSheet.cssRules.length);
+      styleSheet.insertRule(`
+        #deleteButton:hover {
+          background: #c82333 !important;
+        }
+      `, styleSheet.cssRules.length);
+    }
+
+    function applyDefaultStyle() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>
