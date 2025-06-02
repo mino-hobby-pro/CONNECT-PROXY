@@ -1,220 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CONNECT=PROXY</title>
-    <link rel="icon" type="image/x-icon" href="assets/img/google.png" />
-    <link
-      href="https://fonts.googleapis.com/css?family=Orbitron:400,700|Montserrat:400,700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CONNECT=PROXY</title>
+  <link rel="icon" type="image/x-icon" href="assets/img/google.png" />
+  <linkhref="https://fonts.googleapis.com/css?family=Orbitron:400,700|Montserrat:400,700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Montserrat', sans-serif;
+      color: #ffffff;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background: linear-gradient(45deg, #000000, #1a1a1a, #000000);
+      background-size: 600% 600%;
+      animation: gradientAnimation 20s ease infinite;
+    }
+    #particleCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .header-container {
+      width: 100%;
+      max-width: 1200px;
+      padding: 80px;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+      text-align: center;
+      backdrop-filter: blur(8px);
+      position: relative;
+      z-index: 1;
+    }
+    @keyframes gradientAnimation {
+      0% {
+        background-position: 0% 50%;
       }
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-        font-family: 'Montserrat', sans-serif;
-        color: #ffffff;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        background: linear-gradient(45deg, #000000, #1a1a1a, #000000);
-        background-size: 600% 600%;
-        animation: gradientAnimation 20s ease infinite;
+      50% {
+        background-position: 100% 50%;
       }
-      #particleCanvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 0;
+      100% {
+        background-position: 0% 50%;
       }
-      .header-container {
-        width: 100%;
-        max-width: 1200px;
-        padding: 80px;
-        border-radius: 20px;
-        background: rgba(0, 0, 0, 0.6);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
-        text-align: center;
-        backdrop-filter: blur(8px);
-        position: relative;
-        z-index: 1;
+    }
+    .header {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 4rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #4fc3f7;
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      animation: fadeInDown 1.5s ease-out both;
+    }
+    @keyframes fadeInDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-30px);
       }
-      @keyframes gradientAnimation {
-        0% {
-          background-position: 0% 50%;
-        }
-        50% {
-          background-position: 100% 50%;
-        }
-        100% {
-          background-position: 0% 50%;
-        }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
       }
-      .header {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 4rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-        color: #4fc3f7;
-        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-        animation: fadeInDown 1.5s ease-out both;
+    }
+    .description {
+      font-size: 1.75rem;
+      margin-bottom: 30px;
+      color: #a8d0e6;
+      letter-spacing: 1px;
+      animation: fadeIn 1.5s ease-out both;
+      animation-delay: 0.5s;
+    }
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
       }
-      @keyframes fadeInDown {
-        0% {
-          opacity: 0;
-          transform: translateY(-30px);
-        }
-        100% {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      100% {
+        opacity: 1;
       }
-      .description {
-        font-size: 1.75rem;
-        margin-bottom: 30px;
-        color: #a8d0e6;
-        letter-spacing: 1px;
-        animation: fadeIn 1.5s ease-out both;
-        animation-delay: 0.5s;
+    }
+    .input {
+      font-size: 1.5rem;
+      padding: 15px 20px;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 30px;
+      border: 2px solid rgba(79, 195, 247, 0.8);
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #e0e0e0;
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+      text-align: center;
+      animation: fadeInUp 1.5s ease-out both;
+      animation-delay: 1s;
+    }
+    .input::placeholder {
+      color: #b0c4de;
+    }
+    .input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #4fc3f7;
+      box-shadow: 0 0 12px #4fc3f7;
+      transform: scale(1.02);
+    }
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
       }
-      @keyframes fadeIn {
-        0% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 1;
-        }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
       }
-      .input {
-        font-size: 1.5rem;
-        padding: 15px 20px;
-        width: 90%;
-        max-width: 600px;
-        border-radius: 30px;
-        border: 2px solid rgba(79, 195, 247, 0.8);
-        outline: none;
-        background: rgba(255, 255, 255, 0.1);
-        color: #e0e0e0;
-        transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;
-        text-align: center;
-        animation: fadeInUp 1.5s ease-out both;
-        animation-delay: 1s;
-      }
-      .input::placeholder {
-        color: #b0c4de;
-      }
-      .input:focus {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: #4fc3f7;
-        box-shadow: 0 0 12px #4fc3f7;
-        transform: scale(1.02);
-      }
-      @keyframes fadeInUp {
-        0% {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        100% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <canvas id="particleCanvas"></canvas>
-    <div class="header-container">
-      <h1 class="header">CONNECT=PROXY</h1>
-      <p class="description">already connected</p>
-      <input
-        type="text"
-        class="input"
-        id="searchInput"
-        name="search"
-        placeholder="Search or enter a URL..."
-      />
+    }
+
+    /* ───────── ショートカット用スタイル ───────── */
+    .shortcut-container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 30px;
+    }
+    .shortcut {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: #e0e0e0;
+      transition: transform 0.3s;
+    }
+    .shortcut-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(79, 195, 247, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      transition: background 0.3s;
+    }
+    .shortcut-label {
+      margin-top: 8px;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+    }
+    .shortcut:hover .shortcut-icon {
+      background: rgba(79, 195, 247, 0.4);
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particleCanvas"></canvas>
+  <div class="header-container">
+    <h1 class="header">CONNECT=PROXY</h1>
+    <p class="description">already connected</p>
+    <inputtype="text" class="input" id="searchInput" name="search" placeholder="Search or enter a URL..." />
+
+    <!-- ───────── ショートカットリンク ───────── -->
+    <div class="shortcut-container">
+      <a href="youtube.html" class="shortcut" aria-label="YouTube">
+        <div class="shortcut-icon">▶️</div>
+        <div class="shortcut-label">YouTube</div>
+      </a>
+      <a href="tiktok.html" class="shortcut" aria-label="TikTok">
+        <div class="shortcut-icon">🎵</div>
+        <div class="shortcut-label">TikTok</div>
+      </a>
+      <a href="min-bbs.html" class="shortcut" aria-label="MIN-BBS">
+        <div class="shortcut-icon">💬</div>
+        <div class="shortcut-label">MIN-BBS</div>
+      </a>
     </div>
-    <script src="./uv/uv.bundle.js"></script>
-    <script src="./uv/uv.config.js"></script>
-    <script src="./assets/register-sw.js"></script>
-    <script src="./assets/script.js" defer></script>
-    <script>
-      (function(){
-        const canvas = document.getElementById("particleCanvas");
-        const ctx = canvas.getContext("2d");
-        function resizeCanvas(){
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
+  </div>
+
+  <script src="./uv/uv.bundle.js"></script>
+  <script src="./uv/uv.config.js"></script>
+  <script src="./assets/register-sw.js"></script>
+  <script src="./assets/script.js" defer></script>
+  <script>
+    (function() {
+      const canvas = document.getElementById("particleCanvas");
+      const ctx = canvas.getContext("2d");
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      const numParticles = 80;
+      let particles = [];
+      const maxLinkDistance = 120;
+
+      class Particle {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.vx = (Math.random() - 0.5) * 1.5;
+          this.vy = (Math.random() - 0.5) * 1.5;
+          this.radius = Math.random() * 2 + 1;
         }
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas();
-        const numParticles = 80;
-        let particles = [];
-        const maxLinkDistance = 120;
-        class Particle{
-          constructor(){
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.vx = (Math.random() - 0.5) * 1.5;
-            this.vy = (Math.random() - 0.5) * 1.5;
-            this.radius = Math.random() * 2 + 1;
-          }
-          update(){
-            this.x += this.vx;
-            this.y += this.vy;
-            if(this.x < 0) this.x = canvas.width;
-            if(this.x > canvas.width) this.x = 0;
-            if(this.y < 0) this.y = canvas.height;
-            if(this.y > canvas.height) this.y = 0;
-          }
-          draw(){
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.fillStyle = "#ffffff";
-            ctx.fill();
-          }
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.x < 0) this.x = canvas.width;
+          if (this.x > canvas.width) this.x = 0;
+          if (this.y < 0) this.y = canvas.height;
+          if (this.y > canvas.height) this.y = 0;
         }
-        for(let i = 0; i < numParticles; i++){
-          particles.push(new Particle());
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.fillStyle = "#ffffff";
+          ctx.fill();
         }
-        function animate(){
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          for(let particle of particles){
-            particle.update();
-            particle.draw();
-          }
-          for(let i = 0; i < numParticles; i++){
-            for(let j = i + 1; j < numParticles; j++){
-              const dx = particles[i].x - particles[j].x;
-              const dy = particles[i].y - particles[j].y;
-              const distance = Math.sqrt(dx * dx + dy * dy);
-              if(distance < maxLinkDistance){
-                ctx.beginPath();
-                ctx.moveTo(particles[i].x, particles[i].y);
-                ctx.lineTo(particles[j].x, particles[j].y);
-                ctx.strokeStyle = "rgba(255,255,255," + (1 - distance / maxLinkDistance) + ")";
-                ctx.lineWidth = 1;
-                ctx.stroke();
-              }
+      }
+
+      for (let i = 0; i < numParticles; i++) {
+        particles.push(new Particle());
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let particle of particles) {
+          particle.update();
+          particle.draw();
+        }
+
+        for (let i = 0; i < numParticles; i++) {
+          for (let j = i + 1; j < numParticles; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < maxLinkDistance) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = "rgba(255,255,255," + (1 - distance / maxLinkDistance) + ")";
+              ctx.lineWidth = 1;
+              ctx.stroke();
             }
           }
-          requestAnimationFrame(animate);
         }
-        animate();
-      })();
-    </script>
-  </body>
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    })();
+  </script>
+</body>
 </html>
