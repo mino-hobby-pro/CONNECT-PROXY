@@ -2,46 +2,114 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Loader</title>
+<title>3D Particle Loader</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000}
 canvas{display:block}
-#message{text-align:center;color:#fff;font-size:1.5rem;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:sans-serif}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<div id="message"></div>
 <script>
-const raw=decodeURIComponent(location.hash.slice(1))
-const canvas=document.getElementById('c')
-const ctx=canvas.getContext('2d')
-let w,h,s=0
-function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight}
-window.addEventListener('resize',resize)
+const raw = location.hash.slice(1)
+const canvas = document.getElementById('c')
+const ctx    = canvas.getContext('2d')
+let w, h, cx, cy
+function resize(){
+  w = canvas.width = innerWidth
+  h = canvas.height = innerHeight
+  cx = w/2; cy = h/2
+}
+window.addEventListener('resize', resize)
 resize()
-function draw(){
-  ctx.clearRect(0,0,w,h)
-  const cx=w/2,cy=h/2,n=8,r=Math.min(w,h)/3
-  for(let i=0;i<n;i++){
-    const a=(s+i/n)*Math.PI*2
-    const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r
-    ctx.beginPath()
-    ctx.arc(x,y,20,0,Math.PI*2)
-    ctx.fillStyle=`hsl(${(i/n*360+s*360)%360},80%,60%)`
-    ctx.fill()
+
+const fl = 300
+const cubeSize = Math.min(w,h)*0.3
+const verts = [
+  {x:-1,y:-1,z:-1},{x:1,y:-1,z:-1},{x:1,y:1,z:-1},{x:-1,y:1,z:-1},
+  {x:-1,y:-1,z:1},{x:1,y:-1,z:1},{x:1,y:1,z:1},{x:-1,y:1,z:1}
+]
+const edges = [
+  [0,1],[1,2],[2,3],[3,0],
+  [4,5],[5,6],[6,7],[7,4],
+  [0,4],[1,5],[2,6],[3,7]
+]
+const particles = []
+for(let i=0;i<200;i++){
+  const theta = Math.random()*2*Math.PI
+  const phi   = Math.acos(2*Math.random()-1)
+  const r     = Math.random()*cubeSize*2
+  particles.push({
+    x: Math.sin(phi)*Math.cos(theta)*r,
+    y: Math.sin(phi)*Math.sin(theta)*r,
+    z: Math.cos(phi)*r
+  })
+}
+
+function rotX(p,a){
+  return {
+    x: p.x,
+    y: p.y*Math.cos(a) - p.z*Math.sin(a),
+    z: p.y*Math.sin(a) + p.z*Math.cos(a)
   }
-  s+=0.002
-  requestAnimationFrame(draw)
 }
-if(raw){
-  document.getElementById('message').textContent='Loading... 読み込み中...'
-  draw()
-  setTimeout(()=>location.href=raw,2000)
-}else{
-  document.getElementById('message').textContent='Specify URL after # / URLを#の後に指定してください'
+function rotY(p,a){
+  return {
+    x: p.x*Math.cos(a) + p.z*Math.sin(a),
+    y: p.y,
+    z: -p.x*Math.sin(a) + p.z*Math.cos(a)
+  }
 }
+function proj(p){
+  const scale = fl/(fl + p.z)
+  return { x: p.x*scale + cx, y: p.y*scale + cy, s: scale }
+}
+
+function animate(t){
+  ctx.clearRect(0,0,w,h)
+  t *= 0.001
+  const ax = t
+  const ay = t * 0.7
+
+  const pv = verts.map(v=>{
+    let p = rotY(v, ay)
+    p = rotX(p, ax)
+    p.x *= cubeSize; p.y *= cubeSize; p.z *= cubeSize
+    return proj(p)
+  })
+
+  ctx.strokeStyle = 'hsla(200,80%,60%,0.8)'
+  ctx.lineWidth = 2
+  edges.forEach(e=>{
+    const a = pv[e[0]], b = pv[e[1]]
+    ctx.beginPath()
+    ctx.moveTo(a.x, a.y)
+    ctx.lineTo(b.x, b.y)
+    ctx.stroke()
+  })
+
+  particles.forEach(p=>{
+    let q = rotY(p, ay * 0.5)
+    q = rotX(q, ax * 0.5)
+    q.z += cubeSize
+    const projP = proj(q)
+    const r = projP.s * 3
+    const alpha = Math.max(0, Math.min(1, (projP.s - 0.2)*1.5))
+    ctx.beginPath()
+    ctx.arc(projP.x, projP.y, r, 0, 6.28)
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`
+    ctx.fill()
+  })
+
+  ctx.font = '20px sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillStyle = '#fff'
+  ctx.fillText('Loading... 読み込み中...', cx, cy + cubeSize + 50)
+
+  requestAnimationFrame(animate)
+}
+requestAnimationFrame(animate)
 </script>
   <script src="./uv/uv.bundle.js"></script>
   <script src="./uv/uv.config.js"></script>
