@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const url = new URL(verifiedHref);
       const params = url.searchParams;
       const id = params.get('v');
-      iframe.src = `yt-no-stream.html#　${id}`
+      iframe.src = `yt-no-stream.html#${id}`
       const onPlayerReady = event => {
         document.title = `${event.target.videoTitle} - ${defaultTitle}`;
       }
