@@ -10,74 +10,51 @@
   </style>
 </head>
 <body>
+
   <input class="input" type="text" placeholder="BY MINO.Made with LebbieTheLuke">
 
-  <!-- 元々のインラインスクリプト → 実行を一旦停止（type と data-delay を追加） -->
-  <script type="text/plain" data-delay>
-document.addEventListener('DOMContentLoaded', () => {
-  const input = document.querySelector('.input');
-  input.addEventListener('keydown', handleInput);
-  if (location.hash.length > 1) {
-    const raw = decodeURIComponent(location.hash.slice(1));
-    input.value = raw;
-    redirect(raw);
-  }
-});
-function handleInput(e) {
-  if (e.key !== 'Enter') return;
-  const raw = e.target.value.trim();
-  if (!raw) return;
-  redirect(raw);
-}
-function redirect(raw) {
-  const target = formatSearch(raw);
-  const uvUrl = __uv$config.prefix + __uv$config.encodeUrl(target);
-  window.location.href = uvUrl;
-}
-function formatSearch(query) {
-  try { return new URL(query).toString(); } catch (e) {}
-  try { const u = new URL('http://' + query); if (u.hostname.includes('.')) return u.toString(); } catch (e) {}
-  return 'https://duckduckgo.com/?t=h_&q=' + encodeURIComponent(query);
-}
-  </script>
-
-  <!-- 各外部スクリプトも同様に実行を一旦停止 -->
-  <script type="text/plain" data-delay data-src="./uv/uv.bundle.js"></script>
-  <script type="text/plain" data-delay data-src="./uv/uv.config.js"></script>
-  <script type="text/plain" data-delay data-src="./assets/register-sw.js"></script>
-  <script type="text/plain" data-delay data-src="./assets/script.js" data-defer="true"></script>
-
-  <!-- ※以下のスクリプトは delay ローダー → ページ load 後0.5秒で delayed 属性付きスクリプトを再生成して実行 -->
   <script>
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        // DOM 順にすべての [data-delay] のスクリプトを取得
-        var delayedScripts = document.querySelectorAll('script[data-delay]');
-        delayedScripts = Array.from(delayedScripts); // 確実な順序のため配列に変換
-        delayedScripts.forEach(function(oldScript) {
-          var newScript = document.createElement('script');
-          // 外部スクリプトの場合は data-src から src をセット
-          if (oldScript.dataset.src) {
-            newScript.src = oldScript.dataset.src;
-          }
-          // defer 属性が指定されていた場合は新スクリプトにも設定
-          if (oldScript.hasAttribute('data-defer')) {
-            newScript.defer = true;
-          }
-          newScript.type = 'text/javascript';
-          // インラインスクリプトなら内容をコピー
-          if (oldScript.textContent.trim()) {
-            newScript.text = oldScript.textContent;
-          }
-          oldScript.parentNode.insertBefore(newScript, oldScript);
-          oldScript.remove();
-        });
-        // ページはすでに load 状態なので、synthetic な DOMContentLoaded イベントを発火させる
-        if (document.readyState === 'complete') {
-          document.dispatchEvent(new Event('DOMContentLoaded'));
-        }
-      }, 500);
+    document.addEventListener('DOMContentLoaded', () => {
+      const input = document.querySelector('.input');
+      input.addEventListener('keydown', handleInput);
+
+      if (location.hash.length > 1) {
+        const raw = decodeURIComponent(location.hash.slice(1));
+        input.value = raw;
+        redirect(raw);
+      }
     });
+
+    function handleInput(e) {
+      if (e.key !== 'Enter') return;
+      const raw = e.target.value.trim();
+      if (!raw) return;
+      redirect(raw);
+    }
+
+    function redirect(raw) {
+      const target = formatSearch(raw);
+      const uvUrl = __uv$config.prefix + __uv$config.encodeUrl(target);
+      window.location.href = uvUrl;
+    }
+
+    function formatSearch(query) {
+      try {
+        return new URL(query).toString();
+      } catch (e) {}
+
+      try {
+        const u = new URL('http://' + query);
+        if (u.hostname.includes('.')) return u.toString();
+      } catch (e) {}
+
+      return 'https://duckduckgo.com/?t=h_&q=' + encodeURIComponent(query);
+    }
   </script>
+  <script src="./uv/uv.bundle.js"></script>
+  <script src="./uv/uv.config.js"></script>
+  <script src="./assets/register-sw.js"></script>
+  <script src="./assets/script.js" defer></script>
+
 </body>
 </html>
