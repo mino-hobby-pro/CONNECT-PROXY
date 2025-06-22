@@ -6,7 +6,6 @@
   <title>connect-proxy</title>
   <link rel="icon" type="image/x-icon" href="assets/img/google.png">
   <style>
-    /* 全体リセット */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -19,7 +18,6 @@
       color: #e0e0e0;
     }
     
-    /* タブバー */
     .tab-bar {
       display: flex;
       align-items: center;
@@ -84,7 +82,6 @@
       background-color: #005fa3;
     }
     
-    /* アドレスバーコンテナ（サファリ風） */
     .address-bar-container {
       display: flex;
       align-items: center;
@@ -158,11 +155,10 @@
       background: #555;
     }
     
-    /* iframe コンテナ（タブバー＋アドレスバー分除く） */
     .iframe-container {
       position: relative;
       width: 100%;
-      height: calc(100% - 120px); /* タブバー60px + アドレスバー約60px */
+      height: calc(100% - 120px); 
     }
     iframe {
       width: 100%;
@@ -177,14 +173,12 @@
 </head>
 <body>
 
-  <!-- タブバー -->
   <div class="tab-bar">
     <div class="brand">CONNECT=PROXY</div>
     <div id="tabs"></div>
     <button class="add-tab" onclick="addTab()" title="新しいタブを追加">＋</button>
   </div>
   
-  <!-- アドレスバー -->
   <div class="address-bar-container">
     <div class="address-nav">
       <button id="backBtn" title="戻る">←</button>
@@ -204,7 +198,6 @@
     </div>
   </div>
 
-  <!-- iframe コンテナ -->
   <div class="iframe-container" id="iframeContainer"></div>
   
   <script>
@@ -295,7 +288,6 @@
           displayUrl = iframe.src;
         }
       }
-      // 特定条件: URLが /server.html の場合は connect://start を表示
       if (displayUrl === "/server.html") {
         displayUrl = "connect://start";
       }
@@ -336,7 +328,6 @@
       }
     }
 
-    // アドレスバーのナビゲーション操作
     document.getElementById('backBtn').addEventListener('click', function(){
       if (currentTabId) {
         document.getElementById(currentTabId).contentWindow.history.back();
@@ -353,7 +344,6 @@
       }
     });
 
-    // オプションメニューのトグル処理
     document.getElementById('optionsBtn').addEventListener('click', function(event){
       event.stopPropagation();
       var menu = document.getElementById('optionsMenu');
@@ -366,7 +356,6 @@
       }
     });
 
-    // 外部ウィンドウで CONNECT-PROXY を起動する共通処理
     function openExternal(targetUrl) {
       const newWin = window.open("", "_blank");
       newWin.document.open();
@@ -375,7 +364,6 @@
       newWin.history.replaceState(null, "", targetUrl);
     }
 
-    // 各オプションメニューの動作
     function actionNewTab() {
       addTab();
       hideOptionsMenu();
