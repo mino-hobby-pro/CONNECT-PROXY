@@ -1,6 +1,401 @@
-<p>このアプリケーションはサーバー負荷のため一時停止中です。<br>
-web開発に興味がありますか？<br>
-ここからどうぞ　https://mino-page.vercel.app<br>
-または自分でプロキシを展開してください<br></p>
-<h1>展開方法</h1>
-<p>https://github.com/mino-hobby-pro/CONNECT-PROXYにアクセス<br>vercelやNetlifyでホストしてください。<br>index.htmlをtest.htmlに置き換えると動作します。<br><br><br>復旧予定日:2025/6/28<br><br><br><br>代理:<a href="https://ref-sort.vercel.app" target="_blank">https://ref-sort.vercel.app</a></p>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>connect-proxy</title>
+  <link rel="icon" type="image/x-icon" href="assets/img/google.png">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(90deg, #0D0D0D, #001f3f);
+      color: #e0e0e0;
+    }
+    
+    .tab-bar {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(90deg, #0D0D0D, #001f3f);
+      border-bottom: 1px solid #333;
+      padding: 0 10px;
+      height: 60px;
+    }
+    .brand {
+      font-size: 20px;
+      font-weight: bold;
+      color: #4FC3F7;
+      margin-right: 20px;
+    }
+    #tabs {
+      display: flex;
+      flex-grow: 1;
+      overflow-x: auto;
+    }
+    .tab {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      margin-right: 5px;
+      background: linear-gradient(135deg, #002240, #001f3f);
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.2s, background 0.3s;
+    }
+    .tab:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #002840, #001f3f);
+    }
+    .tab.active {
+      background: linear-gradient(135deg, #002e50, #001f3f);
+    }
+    .tab .close-btn {
+      margin-left: 8px;
+      color: #e0e0e0;
+      font-weight: bold;
+      background: transparent;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .tab .close-btn:hover {
+      color: #ff4136;
+    }
+    .add-tab {
+      background-color: #001f3f;
+      border: none;
+      color: #4FC3F7;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 28px;
+      transition: background-color 0.2s;
+    }
+    .add-tab:hover {
+      background-color: #005fa3;
+    }
+    
+    .address-bar-container {
+      display: flex;
+      align-items: center;
+      background-color: #262626;
+      border-bottom: 1px solid #333;
+      padding: 5px 10px;
+    }
+    .address-nav {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+    }
+    .address-nav button {
+      background: none;
+      border: none;
+      color: #4FC3F7;
+      font-size: 18px;
+      cursor: pointer;
+      margin-right: 5px;
+      transition: color 0.2s;
+    }
+    .address-nav button:hover {
+      color: #81D4FA;
+    }
+    .address-bar {
+      flex-grow: 1;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 5px;
+      background: #404040;
+      color: #e0e0e0;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    .address-bar:focus {
+      outline: none;
+    }
+    .address-options {
+      position: relative;
+    }
+    .address-options button#optionsBtn {
+      background: none;
+      border: none;
+      color: #4FC3F7;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .options-menu {
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #404040;
+      border: 1px solid #333;
+      border-radius: 5px;
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+    }
+    .options-menu button {
+      background: none;
+      border: none;
+      color: #e0e0e0;
+      padding: 8px 12px;
+      text-align: left;
+      width: 100%;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .options-menu button:hover {
+      background: #555;
+    }
+    
+    .iframe-container {
+      position: relative;
+      width: 100%;
+      height: calc(100% - 120px); 
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+    }
+    iframe.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tab-bar">
+    <div class="brand">CONNECT=PROXY</div>
+    <div id="tabs"></div>
+    <button class="add-tab" onclick="addTab()" title="新しいタブを追加">＋</button>
+  </div>
+  
+  <div class="address-bar-container">
+    <div class="address-nav">
+      <button id="backBtn" title="戻る">←</button>
+      <button id="forwardBtn" title="進む">→</button>
+      <button id="refreshBtn" title="更新">⟳</button>
+    </div>
+    <input id="addressBar" class="address-bar" type="text" readonly value="">
+    <div class="address-options">
+      <button id="optionsBtn" title="詳細">⋮</button>
+      <div id="optionsMenu" class="options-menu">
+        <button onclick="actionNewTab()">新しいタブを開く</button>
+        <button onclick="actionMonitorMode()">監視モードに移行</button>
+        <button onclick="actionAIMode()">AI</button>
+        <button onclick="actionAboutBlank()">about:blankを開く</button>
+        <button onclick="actionBlob()">blobを開く</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="iframe-container" id="iframeContainer"></div>
+  
+  <script>
+    let tabs = [];
+    let currentTabId = null;
+    let tabIdCounter = 0;
+
+    function addTab(url = "server.html") {
+      const id = 'tab-' + (++tabIdCounter);
+      
+      const iframe = document.createElement('iframe');
+      iframe.id = id;
+      iframe.src = url;
+
+      if (!currentTabId) {
+        iframe.classList.add('active');
+        currentTabId = id;
+      }
+      iframe.addEventListener('load', function(){
+        updateTabTitle(id);
+        updateAddressBar(id);
+      });
+      document.getElementById('iframeContainer').appendChild(iframe);
+      
+      const tabButton = document.createElement('div');
+      tabButton.classList.add('tab');
+      tabButton.id = 'button-' + id;
+      
+      const titleSpan = document.createElement('span');
+      titleSpan.innerText = 'Loading...';
+      tabButton.appendChild(titleSpan);
+      
+      const closeBtn = document.createElement('button');
+      closeBtn.innerText = '×';
+      closeBtn.classList.add('close-btn');
+      closeBtn.onclick = function(event) {
+        event.stopPropagation();
+        closeTab(id);
+      };
+      tabButton.appendChild(closeBtn);
+      
+      tabButton.onclick = () => switchTab(id);
+      document.getElementById('tabs').appendChild(tabButton);
+      
+      tabs.push(id);
+      switchTab(id);
+    }
+
+    function switchTab(id) {
+      if (currentTabId && document.getElementById(currentTabId)) {
+        document.getElementById(currentTabId).classList.remove('active');
+        document.getElementById('button-' + currentTabId).classList.remove('active');
+      }
+      currentTabId = id;
+      document.getElementById(id).classList.add('active');
+      document.getElementById('button-' + id).classList.add('active');
+      updateAddressBar(id);
+    }
+
+    function updateTabTitle(id) {
+      try {
+        const iframe = document.getElementById(id);
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        const title = doc.title;
+        const button = document.getElementById('button-' + id);
+        const titleSpan = button.querySelector('span');
+        titleSpan.innerText = title || 'Untitled';
+      } catch(e) {
+        document.getElementById('button-' + id).querySelector('span').innerText = 'Untitled';
+      }
+    }
+
+    function updateAddressBar(id) {
+      const addressInput = document.getElementById("addressBar");
+      let displayUrl = '';
+      const iframe = document.getElementById(id);
+      try {
+        let fullUrl = iframe.contentWindow.location.href;
+        let parsedUrl = new URL(fullUrl);
+        displayUrl = parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+        if (!displayUrl) displayUrl = '/';
+      } catch(e) {
+        try {
+          let parsedUrl = new URL(iframe.src, window.location.href);
+          displayUrl = parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+          if (!displayUrl) displayUrl = '/';
+        } catch(e) {
+          displayUrl = iframe.src;
+        }
+      }
+      if (displayUrl === "/server.html") {
+        displayUrl = "connect://start";
+      }
+      addressInput.value = displayUrl;
+    }
+
+    function closeTab(targetId) {
+      const iframe = document.getElementById(targetId);
+      const tabButton = document.getElementById('button-' + targetId);
+
+      if (iframe && iframe.parentNode) {
+        iframe.parentNode.removeChild(iframe);
+      }
+      if (tabButton && tabButton.parentNode) {
+        tabButton.parentNode.removeChild(tabButton);
+      }
+      
+      const index = tabs.indexOf(targetId);
+      if (index !== -1) {
+        tabs.splice(index, 1);
+      }
+      
+      if (currentTabId === targetId) {
+        let newActiveTabId = null;
+        if (tabs[index]) {
+          newActiveTabId = tabs[index];
+        } else if (tabs[index - 1]) {  
+          newActiveTabId = tabs[index - 1];
+        }
+        
+        if (newActiveTabId) {
+          currentTabId = newActiveTabId;
+          switchTab(newActiveTabId);
+        } else {
+          currentTabId = null;
+          addTab();
+        }
+      }
+    }
+
+    document.getElementById('backBtn').addEventListener('click', function(){
+      if (currentTabId) {
+        document.getElementById(currentTabId).contentWindow.history.back();
+      }
+    });
+    document.getElementById('forwardBtn').addEventListener('click', function(){
+      if (currentTabId) {
+        document.getElementById(currentTabId).contentWindow.history.forward();
+      }
+    });
+    document.getElementById('refreshBtn').addEventListener('click', function(){
+      if (currentTabId) {
+        document.getElementById(currentTabId).contentWindow.location.reload();
+      }
+    });
+
+    document.getElementById('optionsBtn').addEventListener('click', function(event){
+      event.stopPropagation();
+      var menu = document.getElementById('optionsMenu');
+      menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    });
+    document.addEventListener('click', function(){
+      var menu = document.getElementById('optionsMenu');
+      if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+      }
+    });
+
+    function openExternal(targetUrl) {
+      const newWin = window.open("", "_blank");
+      newWin.document.open();
+      newWin.document.write(document.documentElement.outerHTML);
+      newWin.document.close();
+      newWin.history.replaceState(null, "", targetUrl);
+    }
+
+    function actionNewTab() {
+      addTab();
+      hideOptionsMenu();
+    }
+    function actionMonitorMode() {
+      if (currentTabId && document.getElementById(currentTabId)) {
+        document.getElementById(currentTabId).src = "/notp.html";
+      }
+      hideOptionsMenu();
+    }
+    function actionAIMode() {
+      if (currentTabId && document.getElementById(currentTabId)) {
+        document.getElementById(currentTabId).src = "ai.html";
+      }
+      hideOptionsMenu();
+    }
+    function actionAboutBlank() {
+      openExternal("about:blank");
+      hideOptionsMenu();
+    }
+    function actionBlob() {
+      openExternal("blob:");
+      hideOptionsMenu();
+    }
+    function hideOptionsMenu() {
+      var menu = document.getElementById('optionsMenu');
+      menu.style.display = 'none';
+    }
+
+    window.addEventListener('load', function(){
+      addTab();
+    });
+  </script>
+</body>
+</html>
