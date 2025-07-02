@@ -3,7 +3,7 @@ self.__uv$config = {
     prefix: '/service/',
 
     /* Bare server URL */ 
-    bare: 'https://bare-server.akku1139.workers.dev/',
+    bare: 'https://bare.electrial.site',
     
     encodeUrl: Ultraviolet.codec.xor.encode,
     decodeUrl: Ultraviolet.codec.xor.decode,
